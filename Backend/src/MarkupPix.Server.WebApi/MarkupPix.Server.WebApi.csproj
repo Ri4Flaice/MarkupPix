@@ -11,6 +11,8 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="AutoMapper" Version="13.0.1" />
+        <PackageReference Include="MediatR" Version="12.2.0" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.5"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.2">
           <PrivateAssets>all</PrivateAssets>
@@ -24,7 +26,9 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\MarkupPix.Business\MarkupPix.Business.csproj" />
       <ProjectReference Include="..\MarkupPix.Data\MarkupPix.Data.csproj" />
+      <ProjectReference Include="..\MarkupPix.Server.ApiClient\MarkupPix.Server.ApiClient.csproj" />
     </ItemGroup>
 
 </Project>

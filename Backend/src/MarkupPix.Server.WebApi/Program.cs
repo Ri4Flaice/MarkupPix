@@ -1,26 +1,61 @@
+using MarkupPix.Business.Infrastructure;
 using MarkupPix.Data.Data;
+using MarkupPix.Data.Entities;
+using MarkupPix.Server.WebApi.Infrastructure;
 
-var builder = WebApplication.CreateBuilder(args);
+using Microsoft.AspNetCore.Identity;
 
-var env = builder.Environment;
-builder.Configuration
-    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-    .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: true)
-    .AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: true)
-    .AddEnvironmentVariables();
+namespace MarkupPix.Server.WebApi;
 
-builder.Services.AddSwaggerGen();
-builder.Services.AddControllers();
-builder.Services.AddScoped<AppDbContext>();
-
-var app = builder.Build();
-
-if (app.Environment.IsDevelopment())
+/// <summary>
+/// App startup.
+/// </summary>
+public static class Program
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    /// <summary>
+    /// The entry point to the program.
+    /// </summary>
+    /// <param name="args">Cmd parameters.</param>
+    public static void Main(string[] args)
+    {
+        var builder = WebApplication.CreateBuilder(args);
+
+        var env = builder.Environment;
+        builder.Configuration
+            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+            .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: true)
+            .AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: true)
+            .AddEnvironmentVariables();
+
+        builder.Services.AddSwaggerGen();
+        builder.Services.AddControllers(options =>
+        {
+            options.Filters.Add<ValidationExceptionFilter>();
+        });
+        builder.Services.AddScoped<AppDbContext>();
+
+        builder.Services.AddBusinessServices(builder.Configuration);
+
+        builder.Services.AddIdentity<UserEntity, IdentityRole<long>>()
+            .AddEntityFrameworkStores<AppDbContext>()
+            .AddDefaultTokenProviders();
+
+        var app = builder.Build();
+
+        using (var scope = app.Services.CreateScope())
+        {
+            var serviceProvider = scope.ServiceProvider;
+            serviceProvider.ConfigureDefaultDb();
+        }
+
+        if (app.Environment.IsDevelopment())
+        {
+            app.UseSwagger();
+            app.UseSwaggerUI();
+        }
+
+        app.MapControllers();
+
+        app.Run();
+    }
 }
-
-app.MapControllers();
-
-app.Run();
