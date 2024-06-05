@@ -1,0 +1,6 @@
+@MarkupPix.Server.WebApi_HostAddress = http://localhost:5168
+
+GET {{MarkupPix.Server.WebApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
