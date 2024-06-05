@@ -2,3 +2,7 @@
 bin/
 obj/
 SolutionItems/
+
+stylecop.json
+
+!.gitignore
