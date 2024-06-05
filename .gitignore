@@ -4,5 +4,6 @@ obj/
 SolutionItems/
 
 stylecop.json
+appsettings.Local.json
 
 !.gitignore
