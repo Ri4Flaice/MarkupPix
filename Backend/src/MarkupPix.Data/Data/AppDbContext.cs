@@ -1,4 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using MarkupPix.Data.Entities;
+
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
 namespace MarkupPix.Data.Data;
@@ -6,7 +10,7 @@ namespace MarkupPix.Data.Data;
 /// <summary>
 /// Connecting to the database.
 /// </summary>
-public class AppDbContext : DbContext
+public class AppDbContext : IdentityDbContext<UserEntity, IdentityRole<long>, long>
 {
     private readonly IConfiguration _configuration;
 
@@ -28,4 +32,9 @@ public class AppDbContext : DbContext
         optionsBuilder.UseMySQL(_configuration.GetConnectionString("MarkupPixDB") ??
             throw new InvalidOperationException("Connection string 'MarkupPixDB' is missing or empty."));
     }
+
+    /// <summary>
+    /// User data.
+    /// </summary>
+    public DbSet<UserEntity> UsersEntities { get; set; }
 }
