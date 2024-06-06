@@ -4,6 +4,7 @@
         <TargetFramework>net8.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     </PropertyGroup>
 
     <PropertyGroup>
@@ -29,6 +30,12 @@
       <ProjectReference Include="..\MarkupPix.Business\MarkupPix.Business.csproj" />
       <ProjectReference Include="..\MarkupPix.Data\MarkupPix.Data.csproj" />
       <ProjectReference Include="..\MarkupPix.Server.ApiClient\MarkupPix.Server.ApiClient.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include="..\..\.dockerignore">
+        <Link>.dockerignore</Link>
+      </Content>
     </ItemGroup>
 
 </Project>

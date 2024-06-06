@@ -4,6 +4,7 @@ using MarkupPix.Data.Entities;
 using MarkupPix.Server.WebApi.Infrastructure;
 
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace MarkupPix.Server.WebApi;
 
@@ -45,6 +46,7 @@ public static class Program
         using (var scope = app.Services.CreateScope())
         {
             var serviceProvider = scope.ServiceProvider;
+            serviceProvider.GetRequiredService<AppDbContext>().Database.Migrate();
             serviceProvider.ConfigureDefaultDb();
         }
 
