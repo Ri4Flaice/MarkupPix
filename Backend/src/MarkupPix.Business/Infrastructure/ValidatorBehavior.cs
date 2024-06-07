@@ -12,15 +12,15 @@ namespace MarkupPix.Business.Infrastructure;
 public class ValidatorBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
     where TRequest : IRequest<TResponse>
 {
-    private readonly IValidator<TRequest> _validator;
+    private readonly IValidator<TRequest>? _validator;
 
     /// <summary>
     /// Initializes a new instance of the class <see cref="ValidatorBehavior{TRequest,TResponse}"/>.
     /// </summary>
     /// <param name="validator">Validator.</param>
-    public ValidatorBehavior(IValidator<TRequest> validator)
+    public ValidatorBehavior(IEnumerable<IValidator<TRequest>?> validators)
     {
-        _validator = validator;
+        _validator = validators.FirstOrDefault();
     }
 
     /// <summary>
@@ -35,7 +35,7 @@ public class ValidatorBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest
         RequestHandlerDelegate<TResponse> next,
         CancellationToken cancellationToken)
     {
-        _validator.ValidateAndThrow(request);
+        _validator?.ValidateAndThrow(request);
         return next();
     }
 }

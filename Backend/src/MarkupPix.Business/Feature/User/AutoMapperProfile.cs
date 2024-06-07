@@ -33,5 +33,8 @@ public class AutoMapperProfile : Profile
             .ForMember(d => d.LockoutEnd, o => o.Ignore())
             .ForMember(d => d.LockoutEnabled, o => o.Ignore())
             .ForMember(d => d.AccessFailedCount, o => o.MapFrom(s => 0));
+
+        CreateMap<UserEntity, GetUserResponse>()
+            .ForMember(d => d.UserId, o => o.MapFrom(s => s.Id));
     }
 }

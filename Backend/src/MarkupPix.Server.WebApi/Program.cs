@@ -28,6 +28,11 @@ public static class Program
             .AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: true)
             .AddEnvironmentVariables();
 
+        builder.Services.AddStackExchangeRedisCache(options =>
+        {
+            options.Configuration = builder.Configuration.GetConnectionString("Redis");
+        });
+
         builder.Services.AddSwaggerGen();
         builder.Services.AddControllers(options =>
         {

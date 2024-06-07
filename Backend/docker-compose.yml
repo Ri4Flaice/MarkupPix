@@ -33,6 +33,14 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
     networks:
       - markuppix.server.dev
+  
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - markuppix.server.dev
     
 volumes:
   mysql_data:

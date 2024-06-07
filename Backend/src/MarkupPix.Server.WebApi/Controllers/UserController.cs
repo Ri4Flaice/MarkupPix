@@ -35,4 +35,13 @@ public class UserController : BaseController<UserController>
     [HttpPost("create")]
     public async Task<long> CreateUser([FromBody] CreateUserRequest request) =>
         await Mediator.Send(new CreateUser.Command(request));
+
+    /// <summary>
+    /// Get user by id.
+    /// </summary>
+    /// <param name="emailAddress">User email address.</param>
+    /// <returns>Response with data user.</returns>
+    [HttpGet("{emailAddress}")]
+    public async Task<GetUserResponse> GetUser(string emailAddress) =>
+        await Mediator.Send(new GetUser.Command(emailAddress));
 }
