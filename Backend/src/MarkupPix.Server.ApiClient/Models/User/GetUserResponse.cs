@@ -20,12 +20,6 @@ public class GetUserResponse : IUser
     [MaxLength(256)]
     public string? EmailAddress { get; set; }
 
-    /// <summary>
-    /// The user's password.
-    /// </summary>
-    [Required]
-    public string? Password { get; set; }
-
     /// <inheritdoc />
     [Required]
     public bool Block { get; set; }

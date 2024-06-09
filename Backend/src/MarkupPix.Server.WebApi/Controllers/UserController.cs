@@ -5,6 +5,7 @@ using MarkupPix.Server.WebApi.Infrastructure;
 
 using MediatR;
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -37,10 +38,28 @@ public class UserController : BaseController<UserController>
         await Mediator.Send(new CreateUser.Command(request));
 
     /// <summary>
+    /// User login to the system.
+    /// </summary>
+    /// <param name="request">Login user request.</param>
+    /// <returns>The success of the completed operation.</returns>
+    [HttpPost("login")]
+    public async Task<bool> Login([FromBody] LoginUserRequest request)
+    {
+        var token = await Mediator.Send(new LoginUser.Command(request));
+
+        if (string.IsNullOrEmpty(token)) return false;
+
+        HttpContext.Response.Cookies.Append("secretCookies", token);
+
+        return true;
+    }
+
+    /// <summary>
     /// Get user by id.
     /// </summary>
     /// <param name="emailAddress">User email address.</param>
     /// <returns>Response with data user.</returns>
+    [Authorize]
     [HttpGet("{emailAddress}")]
     public async Task<GetUserResponse> GetUser(string emailAddress) =>
         await Mediator.Send(new GetUser.Command(emailAddress));

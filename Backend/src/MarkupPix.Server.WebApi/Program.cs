@@ -42,6 +42,8 @@ public static class Program
 
         builder.Services.AddBusinessServices(builder.Configuration);
 
+        builder.Services.AddWebApiServices();
+
         builder.Services.AddIdentity<UserEntity, IdentityRole<long>>()
             .AddEntityFrameworkStores<AppDbContext>()
             .AddDefaultTokenProviders();
@@ -60,6 +62,9 @@ public static class Program
             app.UseSwagger();
             app.UseSwaggerUI();
         }
+
+        app.UseAuthentication();
+        app.UseAuthorization();
 
         app.MapControllers();
 

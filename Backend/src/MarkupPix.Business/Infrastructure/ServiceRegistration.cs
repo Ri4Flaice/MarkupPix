@@ -27,6 +27,9 @@ public static class ServiceRegistration
         services.AddValidatorsFromAssembly(typeof(BusinessLayer).Assembly);
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestPreProcessorBehavior<,>));
 
+        services.Configure<JwtOptions>(configuration.GetSection("JwtOptions"));
+        services.AddScoped<JwtProvider>();
+
         services.AddMediatR(cfg =>
         {
             cfg.RegisterServicesFromAssembly(typeof(BusinessLayer).Assembly)
