@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MarkupPix.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240605111550_Initial")]
+    [Migration("20240610105017_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
