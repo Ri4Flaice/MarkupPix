@@ -38,7 +38,10 @@ public static class Program
         {
             options.Filters.Add<ValidationExceptionFilter>();
         });
-        builder.Services.AddScoped<AppDbContext>();
+
+        builder.Services.AddDbContext<AppDbContext>(options =>
+            options.UseMySQL(builder.Configuration.GetConnectionString("MarkupPixDB")
+                             ?? throw new Exception("Connection string 'MarkupPixDB' is missing or empty.")));
 
         builder.Services.AddBusinessServices(builder.Configuration);
 
