@@ -1,10 +1,10 @@
 using MarkupPix.Business.Infrastructure;
 using MarkupPix.Data.Data;
-using MarkupPix.Data.Entities;
 using MarkupPix.Server.WebApi.Infrastructure;
 
-using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 
 namespace MarkupPix.Server.WebApi;
 
@@ -33,23 +33,45 @@ public static class Program
             options.Configuration = builder.Configuration.GetConnectionString("Redis");
         });
 
-        builder.Services.AddSwaggerGen();
+        builder.Services.AddDbContext<AppDbContext>(options =>
+            options.UseMySQL(builder.Configuration.GetConnectionString("MarkupPixDB")
+                             ?? throw new Exception("Connection string 'MarkupPixDB' is missing or empty.")));
+
+        builder.Services.AddSwaggerGen(c =>
+        {
+            c.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme
+            {
+                In = ParameterLocation.Header,
+                Description = "Enter the token.",
+                Name = "Authorization",
+                Type = SecuritySchemeType.Http,
+                BearerFormat = "JWT",
+                Scheme = JwtBearerDefaults.AuthenticationScheme,
+            });
+
+            c.AddSecurityRequirement(new OpenApiSecurityRequirement
+            {
+                {
+                    new OpenApiSecurityScheme
+                    {
+                        Reference = new OpenApiReference
+                        {
+                            Type = ReferenceType.SecurityScheme,
+                            Id = "Bearer",
+                        },
+                    },
+                    Array.Empty<string>()
+                },
+            });
+        });
+
         builder.Services.AddControllers(options =>
         {
             options.Filters.Add<ValidationExceptionFilter>();
         });
 
-        builder.Services.AddDbContext<AppDbContext>(options =>
-            options.UseMySQL(builder.Configuration.GetConnectionString("MarkupPixDB")
-                             ?? throw new Exception("Connection string 'MarkupPixDB' is missing or empty.")));
-
         builder.Services.AddBusinessServices(builder.Configuration);
-
         builder.Services.AddWebApiServices();
-
-        builder.Services.AddIdentity<UserEntity, IdentityRole<long>>()
-            .AddEntityFrameworkStores<AppDbContext>()
-            .AddDefaultTokenProviders();
 
         var app = builder.Build();
 

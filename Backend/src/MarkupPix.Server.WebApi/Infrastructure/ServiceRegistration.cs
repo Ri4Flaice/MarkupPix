@@ -1,9 +1,12 @@
 ﻿using System.Text;
 
 using MarkupPix.Business.Infrastructure;
+using MarkupPix.Data.Data;
+using MarkupPix.Data.Entities;
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
@@ -21,35 +24,50 @@ public static class ServiceRegistration
     /// <returns>Changed collection.</returns>
     public static IServiceCollection AddWebApiServices(this IServiceCollection services)
     {
-        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+        services.AddIdentity<UserEntity, IdentityRole<long>>(options =>
+        {
+            options.User.RequireUniqueEmail = true;
+
+            options.Password.RequireDigit = true;
+            options.Password.RequireLowercase = true;
+            options.Password.RequireUppercase = true;
+            options.Password.RequiredLength = 10;
+
+            options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+            options.Lockout.MaxFailedAccessAttempts = 5;
+            options.Lockout.AllowedForNewUsers = true;
+        }).AddEntityFrameworkStores<AppDbContext>()
+        .AddDefaultTokenProviders();
+
+        services.AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+        })
             .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
             {
                 var jwtOptions = services.BuildServiceProvider().GetRequiredService<IOptions<JwtOptions>>().Value;
+                options.SaveToken = true;
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
-                    ValidateIssuer = false,
-                    ValidateAudience = false,
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
+                    ValidIssuer = jwtOptions.Issuer,
+                    ValidAudience = jwtOptions.Audience,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.SecretKey ?? throw new Exception("Secret key empty."))),
-                };
-
-                options.Events = new JwtBearerEvents
-                {
-                    OnMessageReceived = context =>
-                    {
-                        context.Token = context.Request.Cookies["secretCookies"];
-
-                        return Task.CompletedTask;
-                    },
                 };
             });
 
-        services.AddAuthorizationBuilder()
-            .SetDefaultPolicy(new AuthorizationPolicyBuilder()
+        services.AddAuthorization(options =>
+        {
+            options.DefaultPolicy = new AuthorizationPolicyBuilder()
                 .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
                 .RequireAuthenticatedUser()
-                .Build());
+                .Build();
+        });
 
         return services;
     }

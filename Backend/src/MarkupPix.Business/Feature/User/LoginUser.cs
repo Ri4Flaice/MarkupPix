@@ -58,7 +58,7 @@ public static class LoginUser
             if (!isPasswordValid)
                 throw new Exception("The email or password is incorrect.");
 
-            var token = _jwtProvider.GenerateToken(user);
+            var token = await _jwtProvider.GenerateToken(user, _userManager);
 
             return token;
         }

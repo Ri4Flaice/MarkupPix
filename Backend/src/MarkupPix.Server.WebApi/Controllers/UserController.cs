@@ -1,4 +1,5 @@
 ﻿using MarkupPix.Business.Feature.User;
+using MarkupPix.Business.Infrastructure;
 using MarkupPix.Data.Entities;
 using MarkupPix.Server.ApiClient.Models.User;
 using MarkupPix.Server.WebApi.Infrastructure;
@@ -43,15 +44,16 @@ public class UserController : BaseController<UserController>
     /// <param name="request">Login user request.</param>
     /// <returns>The success of the completed operation.</returns>
     [HttpPost("login")]
-    public async Task<bool> Login([FromBody] LoginUserRequest request)
+    public async Task<string> Login([FromBody] LoginUserRequest request)
     {
         var token = await Mediator.Send(new LoginUser.Command(request));
 
-        if (string.IsNullOrEmpty(token)) return false;
+        if (string.IsNullOrEmpty(token))
+        {
+            throw new Exception("Token empty.");
+        }
 
-        HttpContext.Response.Cookies.Append("secretCookies", token);
-
-        return true;
+        return token;
     }
 
     /// <summary>
@@ -59,7 +61,7 @@ public class UserController : BaseController<UserController>
     /// </summary>
     /// <param name="emailAddress">User email address.</param>
     /// <returns>Response with data user.</returns>
-    [Authorize]
+    [Authorize(Roles = UserRoles.Admin)]
     [HttpGet("{emailAddress}")]
     public async Task<GetUserResponse> GetUser(string emailAddress) =>
         await Mediator.Send(new GetUser.Command(emailAddress));
