@@ -51,11 +51,6 @@ public static class GetUser
         {
             try
             {
-                if (request.UserEmailAddress == null)
-                {
-                    throw new ArgumentNullException(nameof(request.UserEmailAddress), "UserId cannot be null.");
-                }
-
                 var cacheKey = $"user:{request.UserEmailAddress}";
                 var cachedUser = await _cache.GetStringAsync(cacheKey, cancellationToken);
 
