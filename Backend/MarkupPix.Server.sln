@@ -2,8 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionItems", "{080085CD-6DFC-4A4B-9D15-656E7A807B2F}"
 	ProjectSection(SolutionItems) = preProject
-		SolutionItems\stylecop.json = SolutionItems\stylecop.json
 		SolutionItems\CodeAnalysis.ruleset = SolutionItems\CodeAnalysis.ruleset
+		SolutionItems\stylecop.json = SolutionItems\stylecop.json
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{FABCA4F3-5F1B-4AE9-82C6-F35C2797622E}"

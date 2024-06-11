@@ -21,7 +21,7 @@ public class AutoMapperProfile : Profile
             .ForMember(d => d.AccountType, o => o.MapFrom(s => s.AccountType))
             .ForMember(d => d.UserName, o => o.MapFrom(s => s.EmailAddress))
             .ForMember(d => d.NormalizedUserName, o => o.Ignore())
-            .ForMember(d => d.Email, o => o.Ignore())
+            .ForMember(d => d.Email, o => o.MapFrom(s => s.EmailAddress))
             .ForMember(d => d.NormalizedEmail, o => o.Ignore())
             .ForMember(d => d.EmailConfirmed, o => o.Ignore())
             .ForMember(d => d.PasswordHash, o => o.Ignore())
