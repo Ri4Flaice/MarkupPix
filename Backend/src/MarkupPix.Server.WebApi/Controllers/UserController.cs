@@ -65,4 +65,13 @@ public class UserController : BaseController<UserController>
     [HttpGet("{emailAddress}")]
     public async Task<GetUserResponse> GetUser(string emailAddress) =>
         await Mediator.Send(new GetUser.Command(emailAddress));
+
+    /// <summary>
+    /// Get all users.
+    /// </summary>
+    /// <returns>The list of users.</returns>
+    [Authorize(Roles = UserRoles.Admin)]
+    [HttpGet("users")]
+    public async Task<IEnumerable<GetUserResponse>> GetAllUsers() =>
+        await Mediator.Send(new GetAllUsers.Command());
 }
