@@ -54,13 +54,13 @@ public static class LoginUser
         /// <inheritdoc />
         public async Task<string> Handle(Command request, CancellationToken cancellationToken)
         {
-            var cacheKey = $"users:{request.LoginUserRequest.Email}";
+            var cacheKey = $"users:{request.LoginUserRequest.EmailAddress}";
             var cachedUser = await _cache.GetStringAsync(cacheKey, cancellationToken);
 
             var user = !string.IsNullOrEmpty(cachedUser)
                 ? JsonSerializer.Deserialize<UserEntity>(cachedUser)
                 : await _dbContext.UsersEntities.FirstOrDefaultAsync(
-                    u => u.EmailAddress == request.LoginUserRequest.Email, cancellationToken);
+                    u => u.EmailAddress == request.LoginUserRequest.EmailAddress, cancellationToken);
 
             if (user == null)
                 throw new Exception("The email or password is incorrect.");

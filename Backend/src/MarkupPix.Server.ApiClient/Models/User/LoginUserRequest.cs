@@ -8,7 +8,7 @@ public class LoginUserRequest
     /// <summary>
     /// User's email address.
     /// </summary>
-    public string? Email { get; set; }
+    public string? EmailAddress { get; set; }
 
     /// <summary>
     /// User's password.

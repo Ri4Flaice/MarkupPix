@@ -39,6 +39,16 @@ public class UserController : BaseController<UserController>
         await Mediator.Send(new CreateUser.Command(request));
 
     /// <summary>
+    /// Update user.
+    /// </summary>
+    /// <param name="request">Update user request.</param>
+    /// <returns>The success of the operation.</returns>
+    [Authorize(Roles = UserRoles.Admin)]
+    [HttpPatch("update")]
+    public async Task<bool> UpdateUser([FromBody] UpdateUserRequest request) =>
+        await Mediator.Send(new UpdateUser.Command(request));
+
+    /// <summary>
     /// User login to the system.
     /// </summary>
     /// <param name="request">Login user request.</param>
