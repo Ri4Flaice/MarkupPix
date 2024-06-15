@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+
 using AutoMapper;
 
 using MarkupPix.Data.Data;
@@ -51,7 +52,7 @@ public static class GetUser
         {
             try
             {
-                var cacheKey = $"user:{request.UserEmailAddress}";
+                var cacheKey = $"users:{request.UserEmailAddress}";
                 var cachedUser = await _cache.GetStringAsync(cacheKey, cancellationToken);
 
                 if (cachedUser != null)

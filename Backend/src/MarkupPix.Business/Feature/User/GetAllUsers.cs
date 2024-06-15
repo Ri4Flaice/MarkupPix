@@ -62,11 +62,6 @@ public static class GetAllUsers
 
                 var users = _mapper.Map<List<UserEntity>, List<GetUserResponse>>(usersResponse);
 
-                await _cache.SetStringAsync(
-                    "users",
-                    JsonSerializer.Serialize(users),
-                    cancellationToken);
-
                 return users;
             }
             catch (Exception e)

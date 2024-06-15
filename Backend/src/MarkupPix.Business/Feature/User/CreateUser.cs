@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+
 using AutoMapper;
 
 using FluentValidation;
@@ -74,7 +75,7 @@ public static class CreateUser
         {
             try
             {
-                var cacheKey = $"user:{request.CreateUserRequest.EmailAddress}";
+                var cacheKey = $"users:{request.CreateUserRequest.EmailAddress}";
                 var cachedUser = await _cache.GetStringAsync(cacheKey, cancellationToken);
 
                 if (cachedUser != null)

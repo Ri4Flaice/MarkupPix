@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+
 using MarkupPix.Business.Infrastructure;
 using MarkupPix.Data.Data;
 using MarkupPix.Data.Entities;
@@ -53,7 +54,7 @@ public static class LoginUser
         /// <inheritdoc />
         public async Task<string> Handle(Command request, CancellationToken cancellationToken)
         {
-            var cacheKey = $"user:{request.LoginUserRequest.Email}";
+            var cacheKey = $"users:{request.LoginUserRequest.Email}";
             var cachedUser = await _cache.GetStringAsync(cacheKey, cancellationToken);
 
             var user = !string.IsNullOrEmpty(cachedUser)
