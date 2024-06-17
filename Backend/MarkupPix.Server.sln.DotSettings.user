@@ -6,5 +6,8 @@
     &lt;TestId&gt;NUnit3x::F08555A6-942F-42AB-A34C-21E3FF076930::net8.0::MarkupPix.Business.Tests.User.CreateUserTests&lt;/TestId&gt;&#xD;
     &lt;TestId&gt;NUnit3x::F08555A6-942F-42AB-A34C-21E3FF076930::net8.0::MarkupPix.Business.Tests.User.GetUserTests&lt;/TestId&gt;&#xD;
     &lt;TestId&gt;NUnit3x::F08555A6-942F-42AB-A34C-21E3FF076930::net8.0::MarkupPix.Business.Tests.User.GetAllUsersTests&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::F08555A6-942F-42AB-A34C-21E3FF076930::net8.0::MarkupPix.Business.Tests.User.UpdateUserTests.NegativeUpdateUserTest&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::F08555A6-942F-42AB-A34C-21E3FF076930::net8.0::MarkupPix.Business.Tests.User.UpdateUserTests.PositiveUpdateUserTest&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::F08555A6-942F-42AB-A34C-21E3FF076930::net8.0::MarkupPix.Business.Tests.User.UpdateUserTests&lt;/TestId&gt;&#xD;
   &lt;/TestAncestor&gt;&#xD;
 &lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>

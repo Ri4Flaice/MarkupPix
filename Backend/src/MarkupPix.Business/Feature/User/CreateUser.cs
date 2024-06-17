@@ -75,12 +75,6 @@ public static class CreateUser
         {
             try
             {
-                var cacheKey = $"users:{request.CreateUserRequest.EmailAddress}";
-                var cachedUser = await _cache.GetStringAsync(cacheKey, cancellationToken);
-
-                if (cachedUser != null)
-                    throw new Exception("A user with such an email already exists (from cache).");
-
                 var existingUser = await _dbContext
                     .UsersEntities
                     .AsNoTracking()
@@ -100,6 +94,7 @@ public static class CreateUser
 
                 _dbContext.UsersEntities.Add(user);
 
+                var cacheKey = $"users:{request.CreateUserRequest.EmailAddress}";
                 await _cache.SetStringAsync(cacheKey, JsonSerializer.Serialize(user), cancellationToken);
 
                 return user.Id;
