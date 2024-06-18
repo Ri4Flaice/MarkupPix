@@ -54,30 +54,37 @@ public static class LoginUser
         /// <inheritdoc />
         public async Task<string> Handle(Command request, CancellationToken cancellationToken)
         {
-            var cacheKey = $"users:{request.LoginUserRequest.EmailAddress}";
-            var cachedUser = await _cache.GetStringAsync(cacheKey, cancellationToken);
-
-            var user = !string.IsNullOrEmpty(cachedUser)
-                ? JsonSerializer.Deserialize<UserEntity>(cachedUser)
-                : await _dbContext.UsersEntities.FirstOrDefaultAsync(
-                    u => u.EmailAddress == request.LoginUserRequest.EmailAddress, cancellationToken);
-
-            if (user == null)
-                throw new Exception("The email or password is incorrect.");
-
-            if (string.IsNullOrEmpty(cachedUser))
+            try
             {
-                await _cache.SetStringAsync(cacheKey, JsonSerializer.Serialize(user), cancellationToken);
+                var cacheKey = $"users:{request.LoginUserRequest.EmailAddress}";
+                var cachedUser = await _cache.GetStringAsync(cacheKey, cancellationToken);
+
+                var user = !string.IsNullOrEmpty(cachedUser)
+                    ? JsonSerializer.Deserialize<UserEntity>(cachedUser)
+                    : await _dbContext.UsersEntities.FirstOrDefaultAsync(
+                        u => u.EmailAddress == request.LoginUserRequest.EmailAddress, cancellationToken);
+
+                if (user == null)
+                    throw new Exception("The email or password is incorrect.");
+
+                if (string.IsNullOrEmpty(cachedUser))
+                {
+                    await _cache.SetStringAsync(cacheKey, JsonSerializer.Serialize(user), cancellationToken);
+                }
+
+                var isPasswordValid = await _userManager.CheckPasswordAsync(user, request.LoginUserRequest.Password ?? throw new Exception("User's password empty."));
+
+                if (!isPasswordValid)
+                    throw new Exception("The email or password is incorrect.");
+
+                var token = await _jwtProvider.GenerateToken(user, _userManager);
+
+                return token;
             }
-
-            var isPasswordValid = await _userManager.CheckPasswordAsync(user, request.LoginUserRequest.Password ?? throw new Exception("User's password empty."));
-
-            if (!isPasswordValid)
-                throw new Exception("The email or password is incorrect.");
-
-            var token = await _jwtProvider.GenerateToken(user, _userManager);
-
-            return token;
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
         }
     }
 }

@@ -24,4 +24,9 @@ public class AppDbContext : IdentityDbContext<UserEntity, IdentityRole<long>, lo
     /// User data.
     /// </summary>
     public DbSet<UserEntity> UsersEntities { get; set; }
+
+    /// <summary>
+    /// Document data.
+    /// </summary>
+    public DbSet<DocumentEntity> DocumentsEntities { get; set; }
 }

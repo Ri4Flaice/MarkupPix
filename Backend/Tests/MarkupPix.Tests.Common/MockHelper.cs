@@ -3,6 +3,7 @@
 using MarkupPix.Data.Data;
 using MarkupPix.Data.Entities;
 
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
@@ -40,6 +41,7 @@ public static class MockHelper
         var mapper = new MapperConfiguration(c =>
         {
             c.AddProfile<Business.Feature.User.AutoMapperProfile>();
+            c.AddProfile<Business.Feature.Document.AutoMapperProfile>();
         });
 
         mapper.AssertConfigurationIsValid();
@@ -82,6 +84,31 @@ public static class MockHelper
             .Returns(Task.CompletedTask);
 
         return mockDistributedCache.Object;
+    }
+
+    /// <summary>
+    /// Creating mock for <see cref="IFormFile"/>.
+    /// </summary>
+    /// <param name="fileName">File name.</param>
+    /// <param name="content">File content.</param>
+    /// <returns>File object.</returns>
+    public static IFormFile MockFormFile(string fileName = "TestDocument.docx", string content = "File content in test document")
+    {
+        var fileMock = new Mock<IFormFile>();
+
+        var documentStream = new MemoryStream();
+        var writer = new StreamWriter(documentStream);
+
+        writer.Write(content);
+        writer.Flush();
+        documentStream.Position = 0;
+
+        fileMock.Setup(f => f.OpenReadStream()).Returns(documentStream);
+        fileMock.Setup(f => f.FileName).Returns(fileName);
+        fileMock.Setup(f => f.Length).Returns(documentStream.Length);
+        fileMock.Setup(f => f.ContentType).Returns("application/octet-stream");
+
+        return fileMock.Object;
     }
 
     /// <summary>
