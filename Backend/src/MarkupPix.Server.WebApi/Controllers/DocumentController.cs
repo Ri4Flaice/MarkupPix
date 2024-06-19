@@ -40,4 +40,16 @@ public class DocumentController : BaseController<DocumentController>
     [FileUpload]
     public async Task<long> CreateDocument([FromForm] CreateDocumentRequest request, [FromForm] IFormFile file) =>
         await Mediator.Send(new CreateDocument.Command(request, file));
+
+    /// <summary>
+    /// Update document.
+    /// </summary>
+    /// <param name="request">Update document request.</param>
+    /// <param name="file">Document.</param>
+    /// <returns>The success of the operation.</returns>
+    [Authorize(Roles = UserRoles.AtFileManager)]
+    [HttpPatch("update")]
+    [FileUpload]
+    public async Task<bool> UpdateDocument([FromForm] UpdateDocumentRequest request, [FromForm] IFormFile? file) =>
+        await Mediator.Send(new UpdateDocument.Command(request, file));
 }

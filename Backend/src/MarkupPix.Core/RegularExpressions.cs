@@ -8,14 +8,9 @@ namespace MarkupPix.Core;
 public static class RegularExpressions
 {
     /// <summary>
-    /// A regular expression for english naming.
+    /// A regular expression for english sentences with numbers.
     /// </summary>
-    public static readonly Regex EnglishName = new($"^[{EnglishWords}]{{0,}}$", RegexOptions.Compiled);
-
-    /// <summary>
-    /// A regular expression for english sentences.
-    /// </summary>
-    public static readonly Regex EnglishWithSpaces = new($"^[{EnglishWords}]+(\\s[{EnglishWords}]+)*$", RegexOptions.Compiled);
+    public static readonly Regex EnglishWithSpacesAndNumbers = new($"^[{EnglishWordsWithNumbers}]+(\\s[{EnglishWordsWithNumbers}]+)*$", RegexOptions.Compiled);
 
     /// <summary>
     /// A regular expression for email address.
@@ -28,7 +23,7 @@ public static class RegularExpressions
     public static readonly Regex Password = new(@"^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{}|;:'"",.<>?]).{10,}$", RegexOptions.Compiled);
 
     /// <summary>
-    /// A constant for storing characters of the English alphabet.
+    /// A constant for storing characters of the English alphabet with numbers.
     /// </summary>
-    private const string EnglishWords = "a-zA-Z";
+    private const string EnglishWordsWithNumbers = "a-zA-Z0-9";
 }

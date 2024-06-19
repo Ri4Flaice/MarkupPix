@@ -8,12 +8,12 @@ namespace MarkupPix.Business.Feature.Document;
 /// <summary>
 /// Document's validator.
 /// </summary>
-public class DocumentValidator : AbstractValidator<CreateDocumentRequest>
+public class UpdateDocumentValidator : AbstractValidator<UpdateDocumentRequest>
 {
     /// <summary>
-    /// Initializes a new instance of the class <see cref="DocumentValidator"/>.
+    /// Initializes a new instance of the class <see cref="UpdateDocumentValidator"/>.
     /// </summary>
-    public DocumentValidator()
+    public UpdateDocumentValidator()
     {
         RuleFor(d => d.UserEmailAddress)
             .NotEmpty()
@@ -26,12 +26,10 @@ public class DocumentValidator : AbstractValidator<CreateDocumentRequest>
             .WithMessage("The name should consist of English words");
 
         RuleFor(d => d.DocumentDescription)
-            .NotEmpty()
             .Matches(RegularExpressions.EnglishWithSpacesAndNumbers)
             .WithMessage("It must contain only English words and spaces.");
 
         RuleFor(d => d.NumberPages)
-            .NotEmpty()
             .GreaterThan(0)
             .WithMessage("The number of pages must not be less than zero or equal to zero.");
     }

@@ -1,5 +1,7 @@
 using System.Text.Json;
 
+using FluentValidation;
+
 using MarkupPix.Data.Data;
 using MarkupPix.Server.ApiClient.Models.User;
 
@@ -20,6 +22,21 @@ public static class UpdateUser
     /// </summary>
     /// <param name="UpdateUserRequest">User, which needs to update.</param>
     public record Command(UpdateUserRequest UpdateUserRequest) : IRequest<bool>;
+
+    /// <inheritdoc />
+    public class Validator : AbstractValidator<Command>
+    {
+        /// <summary>
+        /// Initializes a new instance of the class <see cref="Validator"/>.
+        /// </summary>
+        /// <param name="userValidator">Checking the request description.</param>
+        public Validator(IValidator<UpdateUserRequest> userValidator)
+        {
+            RuleFor(q => q.UpdateUserRequest)
+                .NotNull()
+                .SetValidator(userValidator);
+        }
+    }
 
     /// <inheritdoc />
     public class Handler : IRequestHandler<Command, bool>
