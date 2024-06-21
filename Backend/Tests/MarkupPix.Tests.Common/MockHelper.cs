@@ -42,6 +42,7 @@ public static class MockHelper
         {
             c.AddProfile<Business.Feature.User.AutoMapperProfile>();
             c.AddProfile<Business.Feature.Document.AutoMapperProfile>();
+            c.AddProfile<Business.Feature.Page.AutoMapperProfile>();
         });
 
         mapper.AssertConfigurationIsValid();
@@ -109,6 +110,32 @@ public static class MockHelper
         fileMock.Setup(f => f.ContentType).Returns("application/octet-stream");
 
         return fileMock.Object;
+    }
+
+    /// <summary>
+    /// Creating mock for <see cref="IFormFile"/>.
+    /// </summary>
+    /// <returns>Pages object.</returns>
+    public static IEnumerable<IFormFile> MockFormFilePages()
+    {
+        var formFiles = new List<IFormFile>();
+        var pageFileNames = new List<string> { "page1", "page2" };
+
+        foreach (var fileName in pageFileNames)
+        {
+            var pageStream = new MemoryStream();
+
+            var writer = new StreamWriter(pageStream);
+            writer.Write($"Content of {fileName}");
+            writer.Flush();
+            pageStream.Position = 0;
+
+            var formFile = new FormFile(pageStream, 0, pageStream.Length, fileName, $"{fileName}.png");
+
+            formFiles.Add(formFile);
+        }
+
+        return formFiles;
     }
 
     /// <summary>

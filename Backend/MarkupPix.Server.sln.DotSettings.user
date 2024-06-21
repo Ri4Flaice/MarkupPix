@@ -12,5 +12,6 @@
     &lt;TestId&gt;NUnit3x::F08555A6-942F-42AB-A34C-21E3FF076930::net8.0::MarkupPix.Business.Tests.Document.CreateDocumentTests&lt;/TestId&gt;&#xD;
     &lt;TestId&gt;NUnit3x::F08555A6-942F-42AB-A34C-21E3FF076930::net8.0::MarkupPix.Business.Tests.Document.UpdateDocumentTests&lt;/TestId&gt;&#xD;
     &lt;TestId&gt;NUnit3x::F08555A6-942F-42AB-A34C-21E3FF076930::net8.0::MarkupPix.Business.Tests.Document.DocumentValidatorTests&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::F08555A6-942F-42AB-A34C-21E3FF076930::net8.0::MarkupPix.Business.Tests.Page.CreatePageTests&lt;/TestId&gt;&#xD;
   &lt;/TestAncestor&gt;&#xD;
 &lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>

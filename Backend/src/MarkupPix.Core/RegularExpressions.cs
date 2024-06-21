@@ -10,7 +10,7 @@ public static class RegularExpressions
     /// <summary>
     /// A regular expression for english sentences with numbers.
     /// </summary>
-    public static readonly Regex EnglishWithSpacesAndNumbers = new($"^[{EnglishWordsWithNumbers}]+(\\s[{EnglishWordsWithNumbers}]+)*$", RegexOptions.Compiled);
+    public static readonly Regex EnglishTitleDocument = new($"^[{EnglishAlphabetWithNumbersAndSymbolPoint}]+(\\s[{EnglishAlphabetWithNumbersAndSymbolPoint}]+)*$", RegexOptions.Compiled);
 
     /// <summary>
     /// A regular expression for email address.
@@ -23,7 +23,7 @@ public static class RegularExpressions
     public static readonly Regex Password = new(@"^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{}|;:'"",.<>?]).{10,}$", RegexOptions.Compiled);
 
     /// <summary>
-    /// A constant for storing characters of the English alphabet with numbers.
+    /// A constant for storing characters of the English alphabet with numbers and symbol point.
     /// </summary>
-    private const string EnglishWordsWithNumbers = "a-zA-Z0-9";
+    private const string EnglishAlphabetWithNumbersAndSymbolPoint = @"a-zA-Z0-9\.";
 }

@@ -29,4 +29,9 @@ public class AppDbContext : IdentityDbContext<UserEntity, IdentityRole<long>, lo
     /// Document data.
     /// </summary>
     public DbSet<DocumentEntity> DocumentsEntities { get; set; }
+
+    /// <summary>
+    /// Page data.
+    /// </summary>
+    public DbSet<PageEntity> PageEntities { get; set; }
 }

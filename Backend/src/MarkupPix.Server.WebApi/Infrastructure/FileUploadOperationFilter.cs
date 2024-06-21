@@ -1,3 +1,4 @@
+using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Models;
 
 using Swashbuckle.AspNetCore.SwaggerGen;
@@ -25,26 +26,86 @@ public class FileUploadOperationFilter : IOperationFilter
 
         operation.Parameters.Clear();
 
-        operation.RequestBody = new OpenApiRequestBody
+        var isCreateDocument = context.MethodInfo.Name == "CreateDocument";
+        var isUpdateDocument = context.MethodInfo.Name == "UpdateDocument";
+        var isCreatePages = context.MethodInfo.Name == "CreatePages";
+
+        if (isCreateDocument)
         {
-            Content = new Dictionary<string, OpenApiMediaType>
+            operation.RequestBody = new OpenApiRequestBody
             {
-                ["multipart/form-data"] = new()
+                Content = new Dictionary<string, OpenApiMediaType>
                 {
-                    Schema = new OpenApiSchema
+                    ["multipart/form-data"] = new()
                     {
-                        Type = "object",
-                        Properties =
+                        Schema = new OpenApiSchema
                         {
-                            ["userEmailAddress"] = new OpenApiSchema { Type = "string" },
-                            ["documentName"] = new OpenApiSchema { Type = "string" },
-                            ["numberPages"] = new OpenApiSchema { Type = "integer" },
-                            ["documentDescription"] = new OpenApiSchema { Type = "string" },
-                            ["file"] = new OpenApiSchema { Type = "string", Format = "binary" },
+                            Type = "object",
+                            Properties =
+                            {
+                                ["userEmailAddress"] = new OpenApiSchema { Type = "string" },
+                                ["documentName"] = new OpenApiSchema { Type = "string" },
+                                ["numberPages"] = new OpenApiSchema { Type = "integer" },
+                                ["documentDescription"] = new OpenApiSchema { Type = "string" },
+                                ["file"] = new OpenApiSchema { Type = "string", Format = "binary" },
+                            },
                         },
                     },
                 },
-            },
-        };
+            };
+        }
+        else if (isUpdateDocument)
+        {
+            operation.RequestBody = new OpenApiRequestBody
+            {
+                Content = new Dictionary<string, OpenApiMediaType>
+                {
+                    ["multipart/form-data"] = new()
+                    {
+                        Schema = new OpenApiSchema
+                        {
+                            Type = "object",
+                            Properties =
+                            {
+                                ["userEmailAddress"] = new OpenApiSchema { Type = "string" },
+                                ["documentName"] = new OpenApiSchema { Type = "string" },
+                                ["numberPages"] = new OpenApiSchema { Type = "integer" },
+                                ["documentDescription"] = new OpenApiSchema { Type = "string" },
+                                ["file"] = new OpenApiSchema { Type = "string", Format = "binary" },
+                            },
+                        },
+                    },
+                },
+            };
+        }
+        else if (isCreatePages)
+        {
+            operation.RequestBody = new OpenApiRequestBody
+            {
+                Content = new Dictionary<string, OpenApiMediaType>
+                {
+                    ["multipart/form-data"] = new()
+                    {
+                        Schema = new OpenApiSchema
+                        {
+                            Type = "object",
+                            Properties =
+                            {
+                                ["documentName"] = new OpenApiSchema { Type = "string" },
+                                ["pages"] = new OpenApiSchema
+                                {
+                                    Type = "array",
+                                    Items = new OpenApiSchema
+                                    {
+                                        Type = "string",
+                                        Format = "binary",
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            };
+        }
     }
 }

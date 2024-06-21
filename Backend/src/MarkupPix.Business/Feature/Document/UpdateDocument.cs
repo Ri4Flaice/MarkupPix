@@ -72,7 +72,7 @@ public static class UpdateDocument
 
                 existingDocument.UserId = user.Id;
 
-                if (request.UpdateDocumentRequest.NumberPages != null)
+                if (request.UpdateDocumentRequest.NumberPages != null && request.UpdateDocumentRequest.NumberPages > existingDocument.NumberPages)
                     existingDocument.NumberPages = (int)request.UpdateDocumentRequest.NumberPages;
 
                 if (request.UpdateDocumentRequest.DocumentDescription != null)

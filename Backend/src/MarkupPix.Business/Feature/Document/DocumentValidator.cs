@@ -22,12 +22,12 @@ public class DocumentValidator : AbstractValidator<CreateDocumentRequest>
 
         RuleFor(d => d.DocumentName)
             .NotEmpty()
-            .Matches(RegularExpressions.EnglishWithSpacesAndNumbers)
+            .Matches(RegularExpressions.EnglishTitleDocument)
             .WithMessage("The name should consist of English words");
 
         RuleFor(d => d.DocumentDescription)
             .NotEmpty()
-            .Matches(RegularExpressions.EnglishWithSpacesAndNumbers)
+            .Matches(RegularExpressions.EnglishTitleDocument)
             .WithMessage("It must contain only English words and spaces.");
 
         RuleFor(d => d.NumberPages)
