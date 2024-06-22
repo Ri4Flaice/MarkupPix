@@ -21,6 +21,17 @@ public class AutoMapperProfile : Profile
             .ForMember(d => d.User, o => o.Ignore())
             .ForMember(d => d.IsRecognize, o => o.Ignore())
             .ForMember(d => d.DateRecognize, o => o.Ignore())
-            .ForMember(d => d.Page, o => o.Ignore());
+            .ForMember(d => d.Page, o => o.Ignore())
+            .ForMember(d => d.NumberPage, o => o.Ignore());
+
+        CreateMap<UpdatePageRequest, PageEntity>()
+            .ForMember(d => d.Id, o => o.Ignore())
+            .ForMember(d => d.DocumentId, o => o.Ignore())
+            .ForMember(d => d.IsRecognize, o => o.Ignore())
+            .ForMember(d => d.RecognizeUser, o => o.Ignore())
+            .ForMember(d => d.DateRecognize, o => o.Ignore())
+            .ForMember(d => d.Page, o => o.Ignore())
+            .ForMember(d => d.Document, o => o.Ignore())
+            .ForMember(d => d.User, o => o.Ignore());
     }
 }

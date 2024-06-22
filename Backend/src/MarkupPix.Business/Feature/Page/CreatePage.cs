@@ -16,7 +16,7 @@ namespace MarkupPix.Business.Feature.Page;
 /// <summary>
 /// Create page.
 /// </summary>
-public class CreatePage
+public static class CreatePage
 {
     /// <summary>
     /// Command for create page.

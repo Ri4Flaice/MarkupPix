@@ -115,6 +115,29 @@ public static class MockHelper
     /// <summary>
     /// Creating mock for <see cref="IFormFile"/>.
     /// </summary>
+    /// <returns>Page object.</returns>
+    public static IFormFile MockFormFilePage()
+    {
+        var pageMock = new Mock<IFormFile>();
+
+        var pageStream = new MemoryStream();
+        var writer = new StreamWriter(pageStream);
+
+        writer.Write("Content of page");
+        writer.Flush();
+        pageStream.Position = 0;
+
+        pageMock.Setup(f => f.OpenReadStream()).Returns(pageStream);
+        pageMock.Setup(f => f.FileName).Returns("Page.png");
+        pageMock.Setup(f => f.Length).Returns(pageStream.Length);
+        pageMock.Setup(f => f.ContentType).Returns("application/octet-stream");
+
+        return pageMock.Object;
+    }
+
+    /// <summary>
+    /// Creating mock for <see cref="IFormFile"/>.
+    /// </summary>
     /// <returns>Pages object.</returns>
     public static IEnumerable<IFormFile> MockFormFilePages()
     {

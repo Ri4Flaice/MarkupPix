@@ -1,4 +1,3 @@
-using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Models;
 
 using Swashbuckle.AspNetCore.SwaggerGen;
@@ -29,6 +28,7 @@ public class FileUploadOperationFilter : IOperationFilter
         var isCreateDocument = context.MethodInfo.Name == "CreateDocument";
         var isUpdateDocument = context.MethodInfo.Name == "UpdateDocument";
         var isCreatePages = context.MethodInfo.Name == "CreatePages";
+        var isUpdatePage = context.MethodInfo.Name == "UpdatePage";
 
         if (isCreateDocument)
         {
@@ -101,6 +101,29 @@ public class FileUploadOperationFilter : IOperationFilter
                                         Format = "binary",
                                     },
                                 },
+                            },
+                        },
+                    },
+                },
+            };
+        }
+        else if (isUpdatePage)
+        {
+            operation.RequestBody = new OpenApiRequestBody
+            {
+                Content = new Dictionary<string, OpenApiMediaType>
+                {
+                    ["multipart/form-data"] = new()
+                    {
+                        Schema = new OpenApiSchema
+                        {
+                            Type = "object",
+                            Properties =
+                            {
+                                ["userEmailAddress"] = new OpenApiSchema { Type = "string" },
+                                ["documentName"] = new OpenApiSchema { Type = "string" },
+                                ["numberPage"] = new OpenApiSchema { Type = "integer" },
+                                ["page"] = new OpenApiSchema { Type = "string", Format = "binary" },
                             },
                         },
                     },
