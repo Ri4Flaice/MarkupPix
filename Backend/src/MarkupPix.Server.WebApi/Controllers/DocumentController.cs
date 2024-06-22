@@ -52,4 +52,23 @@ public class DocumentController : BaseController<DocumentController>
     [FileUpload]
     public async Task<bool> UpdateDocument([FromForm] UpdateDocumentRequest request, [FromForm] IFormFile? file) =>
         await Mediator.Send(new UpdateDocument.Command(request, file));
+
+    /// <summary>
+    /// Get document.
+    /// </summary>
+    /// <param name="documentName">Document name, which needs get.</param>
+    /// <returns>Document and pages data.</returns>
+    [Authorize(Roles = UserRoles.AtFileManager)]
+    [HttpGet("{documentName}")]
+    public async Task<GetDocumentResponse> GetDocument(string documentName) =>
+        await Mediator.Send(new GetDocument.Command(documentName));
+
+    /// <summary>
+    /// Get all documents.
+    /// </summary>
+    /// <returns>All documents and pages data.</returns>
+    [Authorize(Roles = UserRoles.AtFileManager)]
+    [HttpGet("alldocuments")]
+    public async Task<IEnumerable<GetDocumentResponse>> GetAllDocuments() =>
+        await Mediator.Send(new GetAllDocuments.Command());
 }
