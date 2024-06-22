@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MarkupPix.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240621150027_PagesTableAdded")]
-    partial class PagesTableAdded
+    [Migration("20240622085932_PageTableAdded")]
+    partial class PageTableAdded
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -77,6 +77,10 @@ namespace MarkupPix.Data.Migrations
                     b.Property<bool?>("IsRecognize")
                         .HasColumnType("tinyint(1)")
                         .HasComment("Indicates that the page is recognized");
+
+                    b.Property<int>("NumberPage")
+                        .HasColumnType("int")
+                        .HasComment("Number page");
 
                     b.Property<byte[]>("Page")
                         .HasColumnType("longblob")

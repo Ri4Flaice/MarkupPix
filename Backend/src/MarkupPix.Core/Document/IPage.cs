@@ -16,6 +16,11 @@ public interface IPage
     long DocumentId { get; set; }
 
     /// <summary>
+    /// Number page.
+    /// </summary>
+    int NumberPage { get; set; }
+
+    /// <summary>
     /// Indicates that the page is recognized.
     /// </summary>
     bool? IsRecognize { get; set; }

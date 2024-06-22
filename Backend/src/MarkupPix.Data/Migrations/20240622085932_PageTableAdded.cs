@@ -7,7 +7,7 @@ using MySql.EntityFrameworkCore.Metadata;
 namespace MarkupPix.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class PagesTableAdded : Migration
+    public partial class PageTableAdded : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -19,6 +19,7 @@ namespace MarkupPix.Data.Migrations
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
                     DocumentId = table.Column<long>(type: "bigint", nullable: false, comment: "Document id"),
+                    NumberPage = table.Column<int>(type: "int", nullable: false, comment: "Number page"),
                     IsRecognize = table.Column<bool>(type: "tinyint(1)", nullable: true, comment: "Indicates that the page is recognized"),
                     RecognizeUser = table.Column<long>(type: "bigint", nullable: true, comment: "The user who recognized the page."),
                     DateRecognize = table.Column<DateTime>(type: "datetime(6)", nullable: true, comment: "Date of recognition"),

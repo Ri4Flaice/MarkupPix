@@ -25,6 +25,10 @@ public class PageEntity : IPage
     public long DocumentId { get; set; }
 
     /// <inheritdoc />
+    [Comment("Number page")]
+    public int NumberPage { get; set; }
+
+    /// <inheritdoc />
     [Comment("Indicates that the page is recognized")]
     public bool? IsRecognize { get; set; }
 

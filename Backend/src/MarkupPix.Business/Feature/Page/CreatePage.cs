@@ -80,11 +80,13 @@ public class CreatePage
                 if (existingDocument.NumberPages != request.Pages.Count())
                     throw new Exception("The number of pages does not match.");
 
-                foreach (var file in request.Pages)
+                foreach (var (file, numberPage) in request.Pages.Select((file, index) => (file, index + 1)))
                 {
                     var pageEntity = _mapper.Map<PageEntity>(request.CreatePageRequest);
 
                     pageEntity.DocumentId = existingDocument.Id;
+
+                    pageEntity.NumberPage = numberPage;
 
                     await file.CopyToAsync(memoryStream, cancellationToken);
                     pageEntity.Page = memoryStream.ToArray();

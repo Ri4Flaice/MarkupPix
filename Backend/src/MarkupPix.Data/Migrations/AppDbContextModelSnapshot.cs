@@ -75,6 +75,10 @@ namespace MarkupPix.Data.Migrations
                         .HasColumnType("tinyint(1)")
                         .HasComment("Indicates that the page is recognized");
 
+                    b.Property<int>("NumberPage")
+                        .HasColumnType("int")
+                        .HasComment("Number page");
+
                     b.Property<byte[]>("Page")
                         .HasColumnType("longblob")
                         .HasComment("Page");
