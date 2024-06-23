@@ -38,6 +38,11 @@ public static class UserRoles
     public const string AtFileManager = $"{SuperAdmin}, {Admin}, {FileManager}";
 
     /// <summary>
+    /// Access to the Markup role.
+    /// </summary>
+    public const string AtMarkup = $"{SuperAdmin}, {Admin}, {FileManager}, {Markup}";
+
+    /// <summary>
     /// Enumeration of roles.
     /// </summary>
     public static readonly Dictionary<AccountType, string> RolesList =

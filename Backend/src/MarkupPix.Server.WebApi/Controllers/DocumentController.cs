@@ -38,8 +38,13 @@ public class DocumentController : BaseController<DocumentController>
     [Authorize(Roles = UserRoles.AtFileManager)]
     [HttpPost("create")]
     [FileUpload]
-    public async Task<long> CreateDocument([FromForm] CreateDocumentRequest request, [FromForm] IFormFile file) =>
-        await Mediator.Send(new CreateDocument.Command(request, file, await GetCurrentUser()));
+    public async Task<long> CreateDocument([FromForm] CreateDocumentRequest request, [FromForm] IFormFile file)
+    {
+        if (file.ContentType != "application/vnd.openxmlformats-officedocument.wordprocessingml.document" || !file.FileName.EndsWith(".docx"))
+            throw new ArgumentException("Upload a document with the .docx extension");
+
+        return await Mediator.Send(new CreateDocument.Command(request, file, await GetCurrentUser()));
+    }
 
     /// <summary>
     /// Update document.
@@ -50,8 +55,13 @@ public class DocumentController : BaseController<DocumentController>
     [Authorize(Roles = UserRoles.AtFileManager)]
     [HttpPatch("update")]
     [FileUpload]
-    public async Task<bool> UpdateDocument([FromForm] UpdateDocumentRequest request, [FromForm] IFormFile? file) =>
-        await Mediator.Send(new UpdateDocument.Command(request, file, await GetCurrentUser()));
+    public async Task<bool> UpdateDocument([FromForm] UpdateDocumentRequest request, [FromForm] IFormFile? file)
+    {
+        if (file != null && (file.ContentType != "application/vnd.openxmlformats-officedocument.wordprocessingml.document" || !file.FileName.EndsWith(".docx")))
+            throw new ArgumentException("Upload a document with the .docx extension");
+
+        return await Mediator.Send(new UpdateDocument.Command(request, file, await GetCurrentUser()));
+    }
 
     /// <summary>
     /// Get document.

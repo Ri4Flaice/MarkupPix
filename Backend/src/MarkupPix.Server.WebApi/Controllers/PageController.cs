@@ -42,9 +42,7 @@ public class PageController : BaseController<PageController>
     {
         var formFiles = pages.ToList();
         if (formFiles.Any(file => file.ContentType != "image/png"))
-        {
-            return false;
-        }
+            throw new ArgumentException("Upload a image with the .png extension");
 
         return await Mediator.Send(new CreatePage.Command(request, formFiles));
     }
@@ -55,15 +53,13 @@ public class PageController : BaseController<PageController>
     /// <param name="request">Update page request.</param>
     /// <param name="page">Page.</param>
     /// <returns>The success of the operation.</returns>
-    [Authorize(Roles = UserRoles.AtFileManager)]
+    [Authorize(Roles = UserRoles.AtMarkup)]
     [HttpPatch("update")]
     [FileUpload]
     public async Task<bool> UpdatePage([FromForm] UpdatePageRequest request, [FromForm] IFormFile? page)
     {
         if (page != null && page is not { ContentType: "image/png" })
-        {
-            return false;
-        }
+            throw new ArgumentException("Upload a image with the .png extension");
 
         return await Mediator.Send(new UpdatePage.Command(request, page, await GetCurrentUser()));
     }
