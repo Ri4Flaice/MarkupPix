@@ -10,7 +10,7 @@ namespace MarkupPix.Business.Feature.Document;
 /// <summary>
 /// Get all documents.
 /// </summary>
-public class GetAllDocuments
+public static class GetAllDocuments
 {
     /// <summary>
     /// Command for get all documents.
@@ -36,48 +36,29 @@ public class GetAllDocuments
         {
             try
             {
-                var existingDocuments = await _dbContext.DocumentsEntities.ToListAsync(cancellationToken);
-
-                if (existingDocuments == null)
-                    throw new Exception("A documents does not exist.");
-
-                var documentsResponse = new List<GetDocumentResponse>();
-
-                foreach (var document in existingDocuments)
-                {
-                    var existingPages = await _dbContext.PageEntities
-                        .Where(p => p.DocumentId == document.Id)
-                        .Include(p => p.User)
-                        .ToListAsync(cancellationToken);
-
-                    if (existingPages.Count == 0)
-                        throw new Exception("No pages found for the document");
-
-                    var existingUser = await _dbContext.UsersEntities
-                        .SingleOrDefaultAsync(u => u.Id == document.UserId, cancellationToken);
-
-                    if (existingUser == null)
-                        throw new Exception("The user was not found.");
-
-                    var response = new GetDocumentResponse
+                var documentsResponse = await _dbContext.DocumentsEntities
+                    .Include(d => d.Pages)!
+                    .ThenInclude(p => p.User)
+                    .Select(document => new GetDocumentResponse
                     {
-                        UserEmailAddress = existingUser.EmailAddress,
+                        UserEmailAddress = document.User!.EmailAddress,
                         DocumentName = document.DocumentName,
                         DocumentDescription = document.DocumentDescription,
                         NumberPages = document.NumberPages,
                         File = document.File,
-                        Pages = existingPages.Select(p => new GetPageResponse
+                        Pages = document.Pages!.Select(p => new GetPageResponse
                         {
-                            UserEmailAddress = p.User?.EmailAddress,
+                            UserEmailAddress = p.User!.EmailAddress,
                             IsRecognize = p.IsRecognize ?? false,
                             DateRecognize = p.DateRecognize ?? DateTime.MinValue,
                             NumberPage = p.NumberPage,
                             Page = p.Page,
                         }).ToList(),
-                    };
+                    })
+                    .ToListAsync(cancellationToken);
 
-                    documentsResponse.Add(response);
-                }
+                if (documentsResponse == null || documentsResponse.Count == 0)
+                    throw new Exception("No documents found.");
 
                 return documentsResponse;
             }

@@ -41,7 +41,7 @@ public static class GetAllUsers
         {
             try
             {
-                var usersResponse = await _dbContext.Users.ToListAsync(cancellationToken);
+                var usersResponse = await _dbContext.UsersEntities.ToListAsync(cancellationToken);
 
                 if (usersResponse == null)
                     throw new Exception("There are no users in the database.");

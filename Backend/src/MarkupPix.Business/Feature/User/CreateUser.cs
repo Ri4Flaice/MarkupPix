@@ -84,7 +84,7 @@ public static class CreateUser
                     throw new Exception("A user with such an email already exists.");
 
                 var user = _mapper.Map<UserEntity>(request.CreateUserRequest);
-                var result = await _userManager.CreateAsync(user, request.CreateUserRequest.Password);
+                var result = await _userManager.CreateAsync(user, request.CreateUserRequest.Password ?? throw new Exception("The password is empty."));
 
                 if (!result.Succeeded)
                     throw new Exception("Error during user registration.");
@@ -94,7 +94,7 @@ public static class CreateUser
 
                 _dbContext.UsersEntities.Add(user);
 
-                var cacheKey = $"users:{request.CreateUserRequest.EmailAddress}";
+                var cacheKey = $"user:{request.CreateUserRequest.EmailAddress}";
                 await _cache.SetStringAsync(cacheKey, JsonSerializer.Serialize(user), cancellationToken);
 
                 return user.Id;

@@ -57,32 +57,30 @@ public static class UpdatePage
         {
             try
             {
-                var existingDocument = await _dbContext
-                    .DocumentsEntities
-                    .SingleOrDefaultAsync(d => d.DocumentName == request.UpdatePageRequest.DocumentName, cancellationToken);
+                var pageToUpdate = await _dbContext.PageEntities
+                    .Include(p => p.Document)
+                    .SingleOrDefaultAsync(
+                        p =>
+                            p.Document != null &&
+                            p.Document.DocumentName == request.UpdatePageRequest.DocumentName &&
+                            p.NumberPage == request.UpdatePageRequest.NumberPage,
+                        cancellationToken);
 
-                if (existingDocument == null)
-                    throw new Exception("The document was not found.");
+                if (pageToUpdate == null)
+                    throw new Exception("The document or page was not found.");
 
-                var existingPage = await _dbContext
-                    .PageEntities
-                    .SingleOrDefaultAsync(p => p.DocumentId == existingDocument.Id && p.NumberPage == request.UpdatePageRequest.NumberPage, cancellationToken);
-
-                if (existingPage == null)
-                    throw new Exception("No pages found for the document");
-
-                existingPage.IsRecognize = true;
-                existingPage.DateRecognize = DateTime.Now;
-                existingPage.RecognizeUser = request.CurrentUser.Id;
+                pageToUpdate.IsRecognize = true;
+                pageToUpdate.DateRecognize = DateTime.Now;
+                pageToUpdate.RecognizeUser = request.CurrentUser.Id;
 
                 if (request.Page != null)
                 {
                     using var pageStream = new MemoryStream();
                     await request.Page.CopyToAsync(pageStream, cancellationToken);
-                    existingPage.Page = pageStream.ToArray();
+                    pageToUpdate.Page = pageStream.ToArray();
                 }
 
-                _dbContext.PageEntities.Update(existingPage);
+                _dbContext.PageEntities.Update(pageToUpdate);
 
                 await _dbContext.SaveChangesAsync(cancellationToken);
 

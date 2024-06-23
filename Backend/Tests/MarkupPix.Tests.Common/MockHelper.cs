@@ -1,5 +1,4 @@
-﻿using System.Security.Claims;
-using AutoMapper;
+﻿using AutoMapper;
 
 using MarkupPix.Data.Data;
 using MarkupPix.Data.Entities;

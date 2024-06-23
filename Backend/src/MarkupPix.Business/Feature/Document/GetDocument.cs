@@ -37,43 +37,33 @@ public static class GetDocument
         {
             try
             {
-                var existingDocument = await _dbContext
-                    .DocumentsEntities
-                    .SingleOrDefaultAsync(d => d.DocumentName == request.DocumentName, cancellationToken);
+                var response = await _dbContext.DocumentsEntities
+                    .Where(d => d.DocumentName == request.DocumentName)
+                    .Include(d => d.Pages)!
+                    .ThenInclude(p => p.User)
+                    .Select(document => new GetDocumentResponse
+                    {
+                        UserEmailAddress = document.User!.EmailAddress,
+                        DocumentName = document.DocumentName,
+                        DocumentDescription = document.DocumentDescription,
+                        NumberPages = document.NumberPages,
+                        File = document.File,
+                        Pages = document.Pages!.Select(p => new GetPageResponse
+                        {
+                            UserEmailAddress = p.User!.EmailAddress,
+                            IsRecognize = p.IsRecognize ?? false,
+                            DateRecognize = p.DateRecognize ?? DateTime.MinValue,
+                            NumberPage = p.NumberPage,
+                            Page = p.Page,
+                        }).ToList(),
+                    })
+                    .SingleOrDefaultAsync(cancellationToken);
 
-                if (existingDocument == null)
+                if (response == null)
                     throw new Exception("A document with that name does not exist.");
 
-                var existingPages = await _dbContext.PageEntities
-                    .Where(p => p.DocumentId == existingDocument.Id).Include(pageEntity => pageEntity.User)
-                    .ToListAsync(cancellationToken);
-
-                if (existingPages.Count == 0)
+                if (response.Pages == null || response.Pages.Count == 0)
                     throw new Exception("No pages found for the document");
-
-                var existingUser = await _dbContext
-                    .UsersEntities
-                    .SingleOrDefaultAsync(u => u.Id == existingDocument.UserId, cancellationToken);
-
-                if (existingUser == null)
-                    throw new Exception("The user was not found.");
-
-                var response = new GetDocumentResponse
-                {
-                    UserEmailAddress = existingUser.EmailAddress,
-                    DocumentName = existingDocument.DocumentName,
-                    DocumentDescription = existingDocument.DocumentDescription,
-                    NumberPages = existingDocument.NumberPages,
-                    File = existingDocument.File,
-                    Pages = existingPages.Select(p => new GetPageResponse
-                    {
-                        UserEmailAddress = p.User?.EmailAddress,
-                        IsRecognize = p.IsRecognize ?? false,
-                        DateRecognize = p.DateRecognize ?? DateTime.MinValue,
-                        NumberPage = p.NumberPage,
-                        Page = p.Page,
-                    }).ToList(),
-                };
 
                 return response;
             }

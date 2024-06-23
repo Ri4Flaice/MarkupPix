@@ -60,39 +60,37 @@ public static class UpdateUser
         {
             try
             {
-                var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.EmailAddress == request.UpdateUserRequest.EmailAddress, cancellationToken);
+                var existingUser = await _dbContext.UsersEntities.SingleOrDefaultAsync(u => u.EmailAddress == request.UpdateUserRequest.EmailAddress, cancellationToken);
 
-                if (user == null)
+                if (existingUser == null)
                     throw new Exception("This user has not been found.");
 
-                var previousBlock = user.Block;
-                var previousAccountType = user.AccountType;
+                if (request.UpdateUserRequest.Block == existingUser.Block && request.UpdateUserRequest.AccountType == existingUser.AccountType) return true;
 
-                if (request.UpdateUserRequest.Block != null)
-                    user.Block = request.UpdateUserRequest.Block.Value;
-
-                if (request.UpdateUserRequest.AccountType != null)
-                    user.AccountType = request.UpdateUserRequest.AccountType.Value;
-
-                await _dbContext.SaveChangesAsync(cancellationToken);
-
-                if (user.Block == previousBlock && user.AccountType == previousAccountType) return true;
-
-                var cacheKey = $"users:{request.UpdateUserRequest.EmailAddress}";
+                var cacheKey = $"user:{request.UpdateUserRequest.EmailAddress}";
                 var cacheValue = await _cache.GetStringAsync(cacheKey, cancellationToken);
 
-                if (cacheValue == null) throw new Exception("User not found in the cache.");
+                if (cacheValue == null)
+                    throw new Exception("User not found in the cache.");
 
-                var userToUpdate = JsonSerializer.Deserialize<GetUserResponse>(cacheValue);
+                var userToUpdate = JsonSerializer.Deserialize<GetUserResponse>(cacheValue) ?? throw new Exception("Failed to deserialize user data from cache.");
 
-                if (userToUpdate == null) throw new Exception("Failed to deserialize user data from cache.");
+                var previousBlock = existingUser.Block;
+                var previousAccountType = existingUser.AccountType;
 
-                if (request.UpdateUserRequest.Block != null)
+                if (request.UpdateUserRequest.Block != null && request.UpdateUserRequest.Block != previousBlock)
+                {
+                    existingUser.Block = request.UpdateUserRequest.Block.Value;
                     userToUpdate.Block = request.UpdateUserRequest.Block.Value;
+                }
 
-                if (request.UpdateUserRequest.AccountType != null)
+                if (request.UpdateUserRequest.AccountType != null && request.UpdateUserRequest.AccountType != previousAccountType)
+                {
+                    existingUser.AccountType = request.UpdateUserRequest.AccountType.Value;
                     userToUpdate.AccountType = request.UpdateUserRequest.AccountType.Value;
+                }
 
+                await _dbContext.SaveChangesAsync(cancellationToken);
                 await _cache.SetStringAsync(cacheKey, JsonSerializer.Serialize(userToUpdate), cancellationToken);
 
                 return true;

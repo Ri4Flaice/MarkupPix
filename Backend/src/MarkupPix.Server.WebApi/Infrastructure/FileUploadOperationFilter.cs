@@ -18,10 +18,7 @@ public class FileUploadOperationFilter : IOperationFilter
     {
         var hasFileUploadAttribute = context.MethodInfo.GetCustomAttributes(true).OfType<FileUploadAttribute>().Any();
 
-        if (!hasFileUploadAttribute)
-        {
-            return;
-        }
+        if (!hasFileUploadAttribute) return;
 
         operation.Parameters.Clear();
 
@@ -30,102 +27,58 @@ public class FileUploadOperationFilter : IOperationFilter
         var isCreatePages = context.MethodInfo.Name == "CreatePages";
         var isUpdatePage = context.MethodInfo.Name == "UpdatePage";
 
-        if (isCreateDocument)
+        var properties = new Dictionary<string, OpenApiSchema>();
+
+        if (isCreateDocument || isUpdateDocument)
         {
-            operation.RequestBody = new OpenApiRequestBody
-            {
-                Content = new Dictionary<string, OpenApiMediaType>
-                {
-                    ["multipart/form-data"] = new()
-                    {
-                        Schema = new OpenApiSchema
-                        {
-                            Type = "object",
-                            Properties =
-                            {
-                                ["documentName"] = new OpenApiSchema { Type = "string" },
-                                ["numberPages"] = new OpenApiSchema { Type = "integer" },
-                                ["documentDescription"] = new OpenApiSchema { Type = "string" },
-                                ["file"] = new OpenApiSchema { Type = "string", Format = "binary" },
-                            },
-                        },
-                    },
-                },
-            };
-        }
-        else if (isUpdateDocument)
-        {
-            operation.RequestBody = new OpenApiRequestBody
-            {
-                Content = new Dictionary<string, OpenApiMediaType>
-                {
-                    ["multipart/form-data"] = new()
-                    {
-                        Schema = new OpenApiSchema
-                        {
-                            Type = "object",
-                            Properties =
-                            {
-                                ["documentName"] = new OpenApiSchema { Type = "string" },
-                                ["numberPages"] = new OpenApiSchema { Type = "integer" },
-                                ["documentDescription"] = new OpenApiSchema { Type = "string" },
-                                ["file"] = new OpenApiSchema { Type = "string", Format = "binary" },
-                            },
-                        },
-                    },
-                },
-            };
+            properties.Add("documentName", new OpenApiSchema { Type = "string" });
+            properties.Add("numberPages", new OpenApiSchema { Type = "integer" });
+            properties.Add("documentDescription", new OpenApiSchema { Type = "string" });
+            properties.Add("file", new OpenApiSchema { Type = "string", Format = "binary" });
         }
         else if (isCreatePages)
         {
-            operation.RequestBody = new OpenApiRequestBody
+            properties.Add("documentName", new OpenApiSchema { Type = "string" });
+            properties.Add("pages", new OpenApiSchema
             {
-                Content = new Dictionary<string, OpenApiMediaType>
+                Type = "array",
+                Items = new OpenApiSchema
                 {
-                    ["multipart/form-data"] = new()
-                    {
-                        Schema = new OpenApiSchema
-                        {
-                            Type = "object",
-                            Properties =
-                            {
-                                ["documentName"] = new OpenApiSchema { Type = "string" },
-                                ["pages"] = new OpenApiSchema
-                                {
-                                    Type = "array",
-                                    Items = new OpenApiSchema
-                                    {
-                                        Type = "string",
-                                        Format = "binary",
-                                    },
-                                },
-                            },
-                        },
-                    },
+                    Type = "string",
+                    Format = "binary",
                 },
-            };
+            });
         }
         else if (isUpdatePage)
         {
-            operation.RequestBody = new OpenApiRequestBody
+            properties.Add("documentName", new OpenApiSchema { Type = "string" });
+            properties.Add("numberPage", new OpenApiSchema { Type = "integer" });
+            properties.Add("page", new OpenApiSchema { Type = "string", Format = "binary" });
+        }
+
+        CreateStructureAndFormatData(operation, properties);
+    }
+
+    /// <summary>
+    /// Creates a request description for the Swagger (OpenAPI) specification.
+    /// </summary>
+    /// <param name="operation">Operation.</param>
+    /// <param name="properties">Properties.</param>
+    private static void CreateStructureAndFormatData(OpenApiOperation operation, IDictionary<string, OpenApiSchema> properties)
+    {
+        operation.RequestBody = new OpenApiRequestBody
+        {
+            Content = new Dictionary<string, OpenApiMediaType>
             {
-                Content = new Dictionary<string, OpenApiMediaType>
+                ["multipart/form-data"] = new()
                 {
-                    ["multipart/form-data"] = new()
+                    Schema = new OpenApiSchema
                     {
-                        Schema = new OpenApiSchema
-                        {
-                            Type = "object",
-                            Properties =
-                            {
-                                ["documentName"] = new OpenApiSchema { Type = "string" },
-                                ["numberPage"] = new OpenApiSchema { Type = "integer" },
-                                ["page"] = new OpenApiSchema { Type = "string", Format = "binary" },
-                            },
-                        },
+                        Type = "object",
+                        Properties = properties,
                     },
                 },
-            };
-        }
+            },
+        };
     }
 }

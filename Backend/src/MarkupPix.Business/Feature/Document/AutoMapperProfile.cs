@@ -20,6 +20,7 @@ public class AutoMapperProfile : Profile
             .ForMember(d => d.User, o => o.Ignore())
             .ForMember(d => d.DocumentName, o => o.MapFrom(s => s.DocumentName))
             .ForMember(d => d.DocumentDescription, o => o.MapFrom(s => s.DocumentDescription))
-            .ForMember(d => d.NumberPages, o => o.MapFrom(s => s.NumberPages));
+            .ForMember(d => d.NumberPages, o => o.MapFrom(s => s.NumberPages))
+            .ForMember(d => d.Pages, o => o.Ignore());
     }
 }

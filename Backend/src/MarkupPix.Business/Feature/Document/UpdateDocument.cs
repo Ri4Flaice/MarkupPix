@@ -64,6 +64,8 @@ public static class UpdateDocument
                 if (existingDocument == null)
                     throw new Exception("A document with that name does not exist.");
 
+                if (existingDocument.NumberPages == request.UpdateDocumentRequest.NumberPages && existingDocument.DocumentDescription == request.UpdateDocumentRequest.DocumentDescription) return true;
+
                 existingDocument.UserId = request.CurrentUser.Id;
 
                 if (request.UpdateDocumentRequest.NumberPages != null && request.UpdateDocumentRequest.NumberPages > existingDocument.NumberPages)

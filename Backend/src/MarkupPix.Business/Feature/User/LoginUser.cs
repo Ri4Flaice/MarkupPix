@@ -56,12 +56,12 @@ public static class LoginUser
         {
             try
             {
-                var cacheKey = $"users:{request.LoginUserRequest.EmailAddress}";
+                var cacheKey = $"user:{request.LoginUserRequest.EmailAddress}";
                 var cachedUser = await _cache.GetStringAsync(cacheKey, cancellationToken);
 
                 var user = !string.IsNullOrEmpty(cachedUser)
                     ? JsonSerializer.Deserialize<UserEntity>(cachedUser)
-                    : await _dbContext.UsersEntities.FirstOrDefaultAsync(
+                    : await _dbContext.UsersEntities.SingleOrDefaultAsync(
                         u => u.EmailAddress == request.LoginUserRequest.EmailAddress, cancellationToken);
 
                 if (user == null)

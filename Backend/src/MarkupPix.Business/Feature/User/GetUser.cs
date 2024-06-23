@@ -52,7 +52,7 @@ public static class GetUser
         {
             try
             {
-                var cacheKey = $"users:{request.UserEmailAddress}";
+                var cacheKey = $"user:{request.UserEmailAddress}";
                 var cachedUser = await _cache.GetStringAsync(cacheKey, cancellationToken);
 
                 if (cachedUser != null)
@@ -60,7 +60,7 @@ public static class GetUser
                     return JsonSerializer.Deserialize<GetUserResponse>(cachedUser) ?? throw new InvalidOperationException("Failed to deserialize cached user data.");
                 }
 
-                var userResponse = await _dbContext.Users.FirstOrDefaultAsync(u => u.EmailAddress == request.UserEmailAddress, cancellationToken);
+                var userResponse = await _dbContext.UsersEntities.SingleOrDefaultAsync(u => u.EmailAddress == request.UserEmailAddress, cancellationToken);
 
                 if (userResponse == null)
                     throw new Exception("User not found.");

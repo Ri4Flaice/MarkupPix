@@ -46,4 +46,9 @@ public class DocumentEntity : IDocument
     /// A navigation property for the user.
     /// </summary>
     public UserEntity? User { get; set; }
+
+    /// <summary>
+    /// A navigation property for pages.
+    /// </summary>
+    public List<PageEntity>? Pages { get; set; }
 }

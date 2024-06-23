@@ -9,7 +9,7 @@ using MarkupPix.Server.ApiClient.Models.User;
 namespace MarkupPix.Business.Tests.User;
 
 /// <summary>
-/// User validator tests.
+/// User's validator tests.
 /// </summary>
 [TestFixture]
 public class UserValidatorTests

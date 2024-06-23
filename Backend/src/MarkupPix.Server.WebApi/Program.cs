@@ -1,11 +1,3 @@
-using MarkupPix.Business.Infrastructure;
-using MarkupPix.Data.Data;
-using MarkupPix.Server.WebApi.Infrastructure;
-
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi.Models;
-
 namespace MarkupPix.Server.WebApi;
 
 /// <summary>
@@ -19,82 +11,28 @@ public static class Program
     /// <param name="args">Cmd parameters.</param>
     public static void Main(string[] args)
     {
-        var builder = WebApplication.CreateBuilder(args);
-
-        var env = builder.Environment;
-        builder.Configuration
-            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-            .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: true)
-            .AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: true)
-            .AddEnvironmentVariables();
-
-        builder.Services.AddStackExchangeRedisCache(options =>
-        {
-            options.Configuration = builder.Configuration.GetConnectionString("Redis");
-        });
-
-        builder.Services.AddDbContext<AppDbContext>(options =>
-            options.UseMySQL(builder.Configuration.GetConnectionString("MarkupPixDB")
-                             ?? throw new Exception("Connection string 'MarkupPixDB' is missing or empty.")));
-
-        builder.Services.AddSwaggerGen(c =>
-        {
-            c.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme
-            {
-                In = ParameterLocation.Header,
-                Description = "Enter the token.",
-                Name = "Authorization",
-                Type = SecuritySchemeType.Http,
-                BearerFormat = "JWT",
-                Scheme = JwtBearerDefaults.AuthenticationScheme,
-            });
-
-            c.AddSecurityRequirement(new OpenApiSecurityRequirement
-            {
-                {
-                    new OpenApiSecurityScheme
-                    {
-                        Reference = new OpenApiReference
-                        {
-                            Type = ReferenceType.SecurityScheme,
-                            Id = "Bearer",
-                        },
-                    },
-                    Array.Empty<string>()
-                },
-            });
-
-            c.OperationFilter<FileUploadOperationFilter>();
-        });
-
-        builder.Services.AddControllers(options =>
-        {
-            options.Filters.Add<ValidationExceptionFilter>();
-        });
-
-        builder.Services.AddBusinessServices(builder.Configuration);
-        builder.Services.AddWebApiServices();
-
-        var app = builder.Build();
-
-        using (var scope = app.Services.CreateScope())
-        {
-            var serviceProvider = scope.ServiceProvider;
-            serviceProvider.GetRequiredService<AppDbContext>().Database.Migrate();
-            serviceProvider.ConfigureDefaultDb();
-        }
-
-        if (app.Environment.IsDevelopment())
-        {
-            app.UseSwagger();
-            app.UseSwaggerUI();
-        }
-
-        app.UseAuthentication();
-        app.UseAuthorization();
-
-        app.MapControllers();
-
-        app.Run();
+        CreateHostBuilder(args).Build().Run();
     }
+
+    /// <summary>
+    /// Creates a host builder with default configuration.
+    /// </summary>
+    /// <param name="args">The command-line arguments.</param>
+    /// <returns>An instance of the host builder.</returns>
+    public static IHostBuilder CreateHostBuilder(string[] args) =>
+        Host.CreateDefaultBuilder(args)
+            .ConfigureAppConfiguration((hostingContext, config) =>
+            {
+                var env = hostingContext.HostingEnvironment;
+
+                config
+                    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                    .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: true)
+                    .AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: true)
+                    .AddEnvironmentVariables();
+            })
+            .ConfigureWebHostDefaults(webBuilder =>
+            {
+                webBuilder.UseStartup<Startup>();
+            });
 }

@@ -73,27 +73,28 @@ public static class CreatePage
                     .SingleOrDefaultAsync(d => d.DocumentName == request.CreatePageRequest.DocumentName, cancellationToken);
 
                 if (existingDocument == null)
-                    throw new Exception("Document not found.");
-
-                using var memoryStream = new MemoryStream();
+                    throw new Exception("The document was not found.");
 
                 if (existingDocument.NumberPages != request.Pages.Count())
                     throw new Exception("The number of pages does not match.");
+
+                using var memoryStream = new MemoryStream();
+                var pagesEntity = new List<PageEntity>();
 
                 foreach (var (file, numberPage) in request.Pages.Select((file, index) => (file, index + 1)))
                 {
                     var pageEntity = _mapper.Map<PageEntity>(request.CreatePageRequest);
 
                     pageEntity.DocumentId = existingDocument.Id;
-
                     pageEntity.NumberPage = numberPage;
 
                     await file.CopyToAsync(memoryStream, cancellationToken);
                     pageEntity.Page = memoryStream.ToArray();
 
-                    _dbContext.PageEntities.Add(pageEntity);
+                    pagesEntity.Add(pageEntity);
                 }
 
+                await _dbContext.PageEntities.AddRangeAsync(pagesEntity, cancellationToken);
                 await _dbContext.SaveChangesAsync(cancellationToken);
 
                 return true;
