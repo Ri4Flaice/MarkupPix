@@ -1,5 +1,7 @@
 using System.Text.Json;
 
+using FluentValidation;
+
 using MarkupPix.Data.Data;
 using MarkupPix.Server.ApiClient.Models.User;
 
@@ -22,6 +24,21 @@ public static class UpdateUser
     public record Command(UpdateUserRequest UpdateUserRequest) : IRequest<bool>;
 
     /// <inheritdoc />
+    public class Validator : AbstractValidator<Command>
+    {
+        /// <summary>
+        /// Initializes a new instance of the class <see cref="Validator"/>.
+        /// </summary>
+        /// <param name="userValidator">Checking the request description.</param>
+        public Validator(IValidator<UpdateUserRequest> userValidator)
+        {
+            RuleFor(q => q.UpdateUserRequest)
+                .NotNull()
+                .SetValidator(userValidator);
+        }
+    }
+
+    /// <inheritdoc />
     public class Handler : IRequestHandler<Command, bool>
     {
         private readonly AppDbContext _dbContext;
@@ -41,42 +58,49 @@ public static class UpdateUser
         /// <inheritdoc />
         public async Task<bool> Handle(Command request, CancellationToken cancellationToken)
         {
-            var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.EmailAddress == request.UpdateUserRequest.EmailAddress, cancellationToken);
+            try
+            {
+                var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.EmailAddress == request.UpdateUserRequest.EmailAddress, cancellationToken);
 
-            if (user == null)
-                throw new Exception("This user has not been found.");
+                if (user == null)
+                    throw new Exception("This user has not been found.");
 
-            var previousBlock = user.Block;
-            var previousAccountType = user.AccountType;
+                var previousBlock = user.Block;
+                var previousAccountType = user.AccountType;
 
-            if (request.UpdateUserRequest.Block != null)
-                user.Block = request.UpdateUserRequest.Block.Value;
+                if (request.UpdateUserRequest.Block != null)
+                    user.Block = request.UpdateUserRequest.Block.Value;
 
-            if (request.UpdateUserRequest.AccountType != null)
-                user.AccountType = request.UpdateUserRequest.AccountType.Value;
+                if (request.UpdateUserRequest.AccountType != null)
+                    user.AccountType = request.UpdateUserRequest.AccountType.Value;
 
-            await _dbContext.SaveChangesAsync(cancellationToken);
+                await _dbContext.SaveChangesAsync(cancellationToken);
 
-            if (user.Block == previousBlock && user.AccountType == previousAccountType) return true;
+                if (user.Block == previousBlock && user.AccountType == previousAccountType) return true;
 
-            var cacheKey = $"users:{request.UpdateUserRequest.EmailAddress}";
-            var cacheValue = await _cache.GetStringAsync(cacheKey, cancellationToken);
+                var cacheKey = $"users:{request.UpdateUserRequest.EmailAddress}";
+                var cacheValue = await _cache.GetStringAsync(cacheKey, cancellationToken);
 
-            if (cacheValue == null) throw new Exception("User not found in the cache.");
+                if (cacheValue == null) throw new Exception("User not found in the cache.");
 
-            var userToUpdate = JsonSerializer.Deserialize<GetUserResponse>(cacheValue);
+                var userToUpdate = JsonSerializer.Deserialize<GetUserResponse>(cacheValue);
 
-            if (userToUpdate == null) throw new Exception("Failed to deserialize user data from cache.");
+                if (userToUpdate == null) throw new Exception("Failed to deserialize user data from cache.");
 
-            if (request.UpdateUserRequest.Block != null)
-                userToUpdate.Block = request.UpdateUserRequest.Block.Value;
+                if (request.UpdateUserRequest.Block != null)
+                    userToUpdate.Block = request.UpdateUserRequest.Block.Value;
 
-            if (request.UpdateUserRequest.AccountType != null)
-                userToUpdate.AccountType = request.UpdateUserRequest.AccountType.Value;
+                if (request.UpdateUserRequest.AccountType != null)
+                    userToUpdate.AccountType = request.UpdateUserRequest.AccountType.Value;
 
-            await _cache.SetStringAsync(cacheKey, JsonSerializer.Serialize(userToUpdate), cancellationToken);
+                await _cache.SetStringAsync(cacheKey, JsonSerializer.Serialize(userToUpdate), cancellationToken);
 
-            return true;
+                return true;
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
         }
     }
 }

@@ -39,6 +39,7 @@ public class JwtProvider
         var claims = new List<Claim>
         {
             new(ClaimTypes.Email, user.EmailAddress ?? throw new Exception("User email address empty.")),
+            new(ClaimTypes.NameIdentifier, user.Id.ToString()),
         };
         claims.AddRange(userRoles.Select(userRole => new Claim(ClaimTypes.Role, userRole)));
 

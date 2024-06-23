@@ -23,14 +23,19 @@ public static class UserRoles
     public const string Admin = nameof(Admin);
 
     /// <summary>
+    /// File manager.
+    /// </summary>
+    public const string FileManager = nameof(FileManager);
+
+    /// <summary>
     /// The markup.
     /// </summary>
     public const string Markup = nameof(Markup);
 
     /// <summary>
-    /// File manager.
+    /// Access to the FileManager role.
     /// </summary>
-    public const string FileManager = nameof(FileManager);
+    public const string AtFileManager = $"{SuperAdmin}, {Admin}, {FileManager}";
 
     /// <summary>
     /// Enumeration of roles.

@@ -63,6 +63,8 @@ public static class Program
                     Array.Empty<string>()
                 },
             });
+
+            c.OperationFilter<FileUploadOperationFilter>();
         });
 
         builder.Services.AddControllers(options =>

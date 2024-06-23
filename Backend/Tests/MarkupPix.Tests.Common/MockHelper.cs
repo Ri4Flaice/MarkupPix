@@ -1,8 +1,10 @@
-﻿using AutoMapper;
+﻿using System.Security.Claims;
+using AutoMapper;
 
 using MarkupPix.Data.Data;
 using MarkupPix.Data.Entities;
 
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
@@ -40,6 +42,8 @@ public static class MockHelper
         var mapper = new MapperConfiguration(c =>
         {
             c.AddProfile<Business.Feature.User.AutoMapperProfile>();
+            c.AddProfile<Business.Feature.Document.AutoMapperProfile>();
+            c.AddProfile<Business.Feature.Page.AutoMapperProfile>();
         });
 
         mapper.AssertConfigurationIsValid();
@@ -82,6 +86,80 @@ public static class MockHelper
             .Returns(Task.CompletedTask);
 
         return mockDistributedCache.Object;
+    }
+
+    /// <summary>
+    /// Creating mock for <see cref="IFormFile"/>.
+    /// </summary>
+    /// <param name="fileName">File name.</param>
+    /// <param name="content">File content.</param>
+    /// <returns>File object.</returns>
+    public static IFormFile MockFormFile(string fileName = "TestDocument.docx", string content = "File content in test document")
+    {
+        var fileMock = new Mock<IFormFile>();
+
+        var documentStream = new MemoryStream();
+        var writer = new StreamWriter(documentStream);
+
+        writer.Write(content);
+        writer.Flush();
+        documentStream.Position = 0;
+
+        fileMock.Setup(f => f.OpenReadStream()).Returns(documentStream);
+        fileMock.Setup(f => f.FileName).Returns(fileName);
+        fileMock.Setup(f => f.Length).Returns(documentStream.Length);
+        fileMock.Setup(f => f.ContentType).Returns("application/octet-stream");
+
+        return fileMock.Object;
+    }
+
+    /// <summary>
+    /// Creating mock for <see cref="IFormFile"/>.
+    /// </summary>
+    /// <returns>Page object.</returns>
+    public static IFormFile MockFormFilePage()
+    {
+        var pageMock = new Mock<IFormFile>();
+
+        var pageStream = new MemoryStream();
+        var writer = new StreamWriter(pageStream);
+
+        writer.Write("Content of page");
+        writer.Flush();
+        pageStream.Position = 0;
+
+        pageMock.Setup(f => f.OpenReadStream()).Returns(pageStream);
+        pageMock.Setup(f => f.FileName).Returns("Page.png");
+        pageMock.Setup(f => f.Length).Returns(pageStream.Length);
+        pageMock.Setup(f => f.ContentType).Returns("application/octet-stream");
+
+        return pageMock.Object;
+    }
+
+    /// <summary>
+    /// Creating mock for <see cref="IFormFile"/>.
+    /// </summary>
+    /// <returns>Pages object.</returns>
+    public static IEnumerable<IFormFile> MockFormFilePages()
+    {
+        var formFiles = new List<IFormFile>();
+        var pageFileNames = new List<string> { "page1", "page2" };
+
+        foreach (var fileName in pageFileNames)
+        {
+            var pageStream = new MemoryStream();
+
+            var writer = new StreamWriter(pageStream);
+            writer.Write($"Content of {fileName}");
+            writer.Flush();
+            pageStream.Position = 0;
+
+            var formFile = new FormFile(pageStream, 0, pageStream.Length, fileName, $"{fileName}.png");
+
+            formFiles.Add(formFile);
+        }
+
+        return formFiles;
     }
 
     /// <summary>

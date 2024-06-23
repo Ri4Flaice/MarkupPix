@@ -3,6 +3,7 @@ using System;
 using MarkupPix.Data.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MarkupPix.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240617152839_DocumentsTableAdded")]
+    partial class DocumentsTableAdded
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -54,48 +57,6 @@ namespace MarkupPix.Data.Migrations
                     b.ToTable("documents", t =>
                         {
                             t.HasComment("Documents data");
-                        });
-                });
-
-            modelBuilder.Entity("MarkupPix.Data.Entities.PageEntity", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime?>("DateRecognize")
-                        .HasColumnType("datetime(6)")
-                        .HasComment("Date of recognition");
-
-                    b.Property<long>("DocumentId")
-                        .HasColumnType("bigint")
-                        .HasComment("Document id");
-
-                    b.Property<bool?>("IsRecognize")
-                        .HasColumnType("tinyint(1)")
-                        .HasComment("Indicates that the page is recognized");
-
-                    b.Property<int>("NumberPage")
-                        .HasColumnType("int")
-                        .HasComment("Number page");
-
-                    b.Property<byte[]>("Page")
-                        .HasColumnType("longblob")
-                        .HasComment("Page");
-
-                    b.Property<long?>("RecognizeUser")
-                        .HasColumnType("bigint")
-                        .HasComment("The user who recognized the page.");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DocumentId");
-
-                    b.HasIndex("RecognizeUser");
-
-                    b.ToTable("pages", t =>
-                        {
-                            t.HasComment("Pages data");
                         });
                 });
 
@@ -317,23 +278,6 @@ namespace MarkupPix.Data.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("MarkupPix.Data.Entities.PageEntity", b =>
-                {
-                    b.HasOne("MarkupPix.Data.Entities.DocumentEntity", "Document")
-                        .WithMany()
-                        .HasForeignKey("DocumentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("MarkupPix.Data.Entities.UserEntity", "User")
-                        .WithMany()
-                        .HasForeignKey("RecognizeUser");
-
-                    b.Navigation("Document");
 
                     b.Navigation("User");
                 });
