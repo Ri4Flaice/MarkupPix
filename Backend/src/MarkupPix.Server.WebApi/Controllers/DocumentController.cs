@@ -39,7 +39,7 @@ public class DocumentController : BaseController<DocumentController>
     [HttpPost("create")]
     [FileUpload]
     public async Task<long> CreateDocument([FromForm] CreateDocumentRequest request, [FromForm] IFormFile file) =>
-        await Mediator.Send(new CreateDocument.Command(request, file));
+        await Mediator.Send(new CreateDocument.Command(request, file, await GetCurrentUser()));
 
     /// <summary>
     /// Update document.
@@ -51,7 +51,7 @@ public class DocumentController : BaseController<DocumentController>
     [HttpPatch("update")]
     [FileUpload]
     public async Task<bool> UpdateDocument([FromForm] UpdateDocumentRequest request, [FromForm] IFormFile? file) =>
-        await Mediator.Send(new UpdateDocument.Command(request, file));
+        await Mediator.Send(new UpdateDocument.Command(request, file, await GetCurrentUser()));
 
     /// <summary>
     /// Get document.

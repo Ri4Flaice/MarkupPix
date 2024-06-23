@@ -43,7 +43,6 @@ public class FileUploadOperationFilter : IOperationFilter
                             Type = "object",
                             Properties =
                             {
-                                ["userEmailAddress"] = new OpenApiSchema { Type = "string" },
                                 ["documentName"] = new OpenApiSchema { Type = "string" },
                                 ["numberPages"] = new OpenApiSchema { Type = "integer" },
                                 ["documentDescription"] = new OpenApiSchema { Type = "string" },
@@ -67,7 +66,6 @@ public class FileUploadOperationFilter : IOperationFilter
                             Type = "object",
                             Properties =
                             {
-                                ["userEmailAddress"] = new OpenApiSchema { Type = "string" },
                                 ["documentName"] = new OpenApiSchema { Type = "string" },
                                 ["numberPages"] = new OpenApiSchema { Type = "integer" },
                                 ["documentDescription"] = new OpenApiSchema { Type = "string" },
@@ -120,7 +118,6 @@ public class FileUploadOperationFilter : IOperationFilter
                             Type = "object",
                             Properties =
                             {
-                                ["userEmailAddress"] = new OpenApiSchema { Type = "string" },
                                 ["documentName"] = new OpenApiSchema { Type = "string" },
                                 ["numberPage"] = new OpenApiSchema { Type = "integer" },
                                 ["page"] = new OpenApiSchema { Type = "string", Format = "binary" },

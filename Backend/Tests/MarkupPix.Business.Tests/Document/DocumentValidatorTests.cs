@@ -22,8 +22,8 @@ public class DocumentValidatorTests
     /// <returns>Data test.</returns>
     public static IEnumerable<object> InvalidCreateDocumentData()
     {
-        yield return new object[] { new CreateDocumentRequest { UserEmailAddress = "fake@gmailcom", DocumentName = "!!string^_^", DocumentDescription = "desc^_^", NumberPages = -1 } };
-        yield return new object[] { new CreateDocumentRequest { UserEmailAddress = "gmail", DocumentName = "!!string^_^", DocumentDescription = "desc^_^", NumberPages = 0 } };
+        yield return new object[] { new CreateDocumentRequest { DocumentName = "!!string^_^", DocumentDescription = "desc^_^", NumberPages = -1 } };
+        yield return new object[] { new CreateDocumentRequest { DocumentName = "!!string^_^", DocumentDescription = "desc^_^", NumberPages = 0 } };
     }
 
     /// <summary>
@@ -32,8 +32,8 @@ public class DocumentValidatorTests
     /// <returns>Data test.</returns>
     public static IEnumerable<object> ValidCreateDocumentData()
     {
-        yield return new object[] { new CreateDocumentRequest { UserEmailAddress = "admin@gmail.com", DocumentName = "Report", DocumentDescription = "Report from analytics 2024 year", NumberPages = 22 } };
-        yield return new object[] { new CreateDocumentRequest { UserEmailAddress = "markup@mail.ru", DocumentName = "Report", DocumentDescription = "Plan on 2024 year", NumberPages = 1 } };
+        yield return new object[] { new CreateDocumentRequest { DocumentName = "Report", DocumentDescription = "Report from analytics 2024 year", NumberPages = 22 } };
+        yield return new object[] { new CreateDocumentRequest { DocumentName = "Report", DocumentDescription = "Plan on 2024 year", NumberPages = 1 } };
     }
 
     /// <summary>
@@ -42,8 +42,8 @@ public class DocumentValidatorTests
     /// <returns>Data test.</returns>
     public static IEnumerable<object> InvalidUpdateDocumentData()
     {
-        yield return new object[] { new UpdateDocumentRequest { UserEmailAddress = "fake@gmailcom", DocumentName = "!!string^_^", DocumentDescription = "desc^_^", NumberPages = -1 } };
-        yield return new object[] { new UpdateDocumentRequest { UserEmailAddress = "gmail", DocumentName = "!!string^_^", DocumentDescription = "desc^_^", NumberPages = 0 } };
+        yield return new object[] { new UpdateDocumentRequest { DocumentName = "!!string^_^", DocumentDescription = "desc^_^", NumberPages = -1 } };
+        yield return new object[] { new UpdateDocumentRequest { DocumentName = "!!string^_^", DocumentDescription = "desc^_^", NumberPages = 0 } };
     }
 
     /// <summary>
@@ -52,8 +52,8 @@ public class DocumentValidatorTests
     /// <returns>Data test.</returns>
     public static IEnumerable<object> ValidUpdateDocumentData()
     {
-        yield return new object[] { new UpdateDocumentRequest { UserEmailAddress = "admin@gmail.com", DocumentName = "Report", DocumentDescription = "Report from analytics 2024 year", NumberPages = 22 } };
-        yield return new object[] { new UpdateDocumentRequest { UserEmailAddress = "markup@mail.ru", DocumentName = "Report", DocumentDescription = "Plan on 2024 year", NumberPages = 1 } };
+        yield return new object[] { new UpdateDocumentRequest { DocumentName = "Report", DocumentDescription = "Report from analytics 2024 year", NumberPages = 22 } };
+        yield return new object[] { new UpdateDocumentRequest { DocumentName = "Report", DocumentDescription = "Plan on 2024 year", NumberPages = 1 } };
     }
 
     /// <summary>
@@ -77,7 +77,6 @@ public class DocumentValidatorTests
         var result = _documentValidator.TestValidate(request);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(r => r.UserEmailAddress);
         result.ShouldHaveValidationErrorFor(r => r.DocumentName);
         result.ShouldHaveValidationErrorFor(r => r.DocumentDescription);
         result.ShouldHaveValidationErrorFor(r => r.NumberPages);
@@ -108,7 +107,6 @@ public class DocumentValidatorTests
         var result = _updateDocumentValidator.TestValidate(request);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(r => r.UserEmailAddress);
         result.ShouldHaveValidationErrorFor(r => r.DocumentName);
         result.ShouldHaveValidationErrorFor(r => r.DocumentDescription);
         result.ShouldHaveValidationErrorFor(r => r.NumberPages);

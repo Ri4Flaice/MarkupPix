@@ -19,10 +19,4 @@ public class UpdatePageRequest
     /// </summary>
     [Required]
     public int NumberPage { get; set; }
-
-    /// <summary>
-    /// User's email address.
-    /// </summary>
-    [Required]
-    public string? UserEmailAddress { get; set; }
 }

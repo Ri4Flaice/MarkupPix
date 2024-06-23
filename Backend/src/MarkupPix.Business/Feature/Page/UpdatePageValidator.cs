@@ -19,10 +19,5 @@ public class UpdatePageValidator : AbstractValidator<UpdatePageRequest>
             .NotEmpty()
             .Matches(RegularExpressions.EnglishTitleDocument)
             .WithMessage("The name should consist of English words");
-
-        RuleFor(d => d.UserEmailAddress)
-            .NotEmpty()
-            .Matches(RegularExpressions.Email)
-            .WithMessage("Incorrect email");
     }
 }

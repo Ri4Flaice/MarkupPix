@@ -23,7 +23,7 @@ public static class CreateDocument
     /// </summary>
     /// <param name="CreateDocumentRequest">Request create document.</param>
     /// <param name="File">Document.</param>
-    public record Command(CreateDocumentRequest CreateDocumentRequest, IFormFile File) : IRequest<long>;
+    public record Command(CreateDocumentRequest CreateDocumentRequest, IFormFile File, UserEntity CurrentUser) : IRequest<long>;
 
     /// <inheritdoc />
     public class Validator : AbstractValidator<Command>
@@ -75,17 +75,9 @@ public static class CreateDocument
                 if (existingDocument != default)
                     throw new Exception("A document with such an name already exists.");
 
-                var user = await _dbContext
-                    .UsersEntities
-                    .AsNoTracking()
-                    .SingleOrDefaultAsync(d => d.EmailAddress == request.CreateDocumentRequest.UserEmailAddress, cancellationToken);
-
-                if (user == null)
-                    throw new Exception("There is no such user.");
-
                 var document = _mapper.Map<DocumentEntity>(request.CreateDocumentRequest);
 
-                document.UserId = user.Id;
+                document.UserId = request.CurrentUser.Id;
 
                 using var documentStream = new MemoryStream();
                 await request.File.CopyToAsync(documentStream, cancellationToken);

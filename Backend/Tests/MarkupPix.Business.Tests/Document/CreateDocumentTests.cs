@@ -82,7 +82,6 @@ public class CreateDocumentTests
         // Arrange
         var request = new CreateDocumentRequest
         {
-            UserEmailAddress = "admin@gmail.com",
             DocumentName = "TestDocument",
             DocumentDescription = "Test document",
             NumberPages = 12,
@@ -90,7 +89,7 @@ public class CreateDocumentTests
 
         // Assert
         await _handler
-            .Awaiting(h => h.Handle(new CreateDocument.Command(request, _documentFile), CancellationToken.None))
+            .Awaiting(h => h.Handle(new CreateDocument.Command(request, _documentFile, _existingUser), CancellationToken.None))
             .Should().ThrowAsync<Exception>();
     }
 
@@ -104,7 +103,6 @@ public class CreateDocumentTests
         // Arrange
         var request = new CreateDocumentRequest
         {
-            UserEmailAddress = "admin@gmail.com",
             DocumentName = "Report",
             DocumentDescription = "Report for analytics",
             NumberPages = 12,
@@ -112,7 +110,7 @@ public class CreateDocumentTests
 
         // Assert
         await _handler
-            .Awaiting(h => h.Handle(new CreateDocument.Command(request, _documentFile), CancellationToken.None))
+            .Awaiting(h => h.Handle(new CreateDocument.Command(request, _documentFile, _existingUser), CancellationToken.None))
             .Should().NotThrowAsync();
     }
 }

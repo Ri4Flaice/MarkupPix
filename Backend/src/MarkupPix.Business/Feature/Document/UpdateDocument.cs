@@ -1,6 +1,7 @@
 using FluentValidation;
 
 using MarkupPix.Data.Data;
+using MarkupPix.Data.Entities;
 using MarkupPix.Server.ApiClient.Models.Document;
 
 using MediatR;
@@ -20,7 +21,7 @@ public static class UpdateDocument
     /// </summary>
     /// <param name="UpdateDocumentRequest">Request update document.</param>
     /// <param name="File">Document.</param>
-    public record Command(UpdateDocumentRequest UpdateDocumentRequest, IFormFile? File) : IRequest<bool>;
+    public record Command(UpdateDocumentRequest UpdateDocumentRequest, IFormFile? File, UserEntity CurrentUser) : IRequest<bool>;
 
     /// <inheritdoc />
     public class Validator : AbstractValidator<Command>
@@ -63,14 +64,7 @@ public static class UpdateDocument
                 if (existingDocument == null)
                     throw new Exception("A document with that name does not exist.");
 
-                var user = await _dbContext
-                    .UsersEntities
-                    .SingleOrDefaultAsync(d => d.EmailAddress == request.UpdateDocumentRequest.UserEmailAddress, cancellationToken);
-
-                if (user == null)
-                    throw new Exception("There is no such user.");
-
-                existingDocument.UserId = user.Id;
+                existingDocument.UserId = request.CurrentUser.Id;
 
                 if (request.UpdateDocumentRequest.NumberPages != null && request.UpdateDocumentRequest.NumberPages > existingDocument.NumberPages)
                     existingDocument.NumberPages = (int)request.UpdateDocumentRequest.NumberPages;

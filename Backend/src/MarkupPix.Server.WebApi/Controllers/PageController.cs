@@ -65,6 +65,6 @@ public class PageController : BaseController<PageController>
             return false;
         }
 
-        return await Mediator.Send(new UpdatePage.Command(request, page));
+        return await Mediator.Send(new UpdatePage.Command(request, page, await GetCurrentUser()));
     }
 }

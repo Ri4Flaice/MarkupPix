@@ -1,6 +1,7 @@
 using FluentValidation;
 
 using MarkupPix.Data.Data;
+using MarkupPix.Data.Entities;
 using MarkupPix.Server.ApiClient.Models.Document;
 
 using MediatR;
@@ -20,7 +21,7 @@ public static class UpdatePage
     /// </summary>
     /// <param name="UpdatePageRequest">Update page request.</param>
     /// <param name="Page">Page.</param>
-    public record Command(UpdatePageRequest UpdatePageRequest, IFormFile? Page) : IRequest<bool>;
+    public record Command(UpdatePageRequest UpdatePageRequest, IFormFile? Page, UserEntity CurrentUser) : IRequest<bool>;
 
     /// <inheritdoc />
     public class Validator : AbstractValidator<Command>
@@ -63,13 +64,6 @@ public static class UpdatePage
                 if (existingDocument == null)
                     throw new Exception("The document was not found.");
 
-                var existingUser = await _dbContext
-                    .UsersEntities
-                    .SingleOrDefaultAsync(u => u.EmailAddress == request.UpdatePageRequest.UserEmailAddress, cancellationToken);
-
-                if (existingUser == null)
-                    throw new Exception("The user was not found.");
-
                 var existingPage = await _dbContext
                     .PageEntities
                     .SingleOrDefaultAsync(p => p.DocumentId == existingDocument.Id && p.NumberPage == request.UpdatePageRequest.NumberPage, cancellationToken);
@@ -79,7 +73,7 @@ public static class UpdatePage
 
                 existingPage.IsRecognize = true;
                 existingPage.DateRecognize = DateTime.Now;
-                existingPage.RecognizeUser = existingUser.Id;
+                existingPage.RecognizeUser = request.CurrentUser.Id;
 
                 if (request.Page != null)
                 {

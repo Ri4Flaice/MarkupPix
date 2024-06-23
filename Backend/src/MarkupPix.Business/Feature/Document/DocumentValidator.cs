@@ -15,11 +15,6 @@ public class DocumentValidator : AbstractValidator<CreateDocumentRequest>
     /// </summary>
     public DocumentValidator()
     {
-        RuleFor(d => d.UserEmailAddress)
-            .NotEmpty()
-            .Matches(RegularExpressions.Email)
-            .WithMessage("Incorrect email");
-
         RuleFor(d => d.DocumentName)
             .NotEmpty()
             .Matches(RegularExpressions.EnglishTitleDocument)

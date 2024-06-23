@@ -8,13 +8,6 @@ namespace MarkupPix.Server.ApiClient.Models.Document;
 public class UpdateDocumentRequest
 {
     /// <summary>
-    /// User's email address.
-    /// </summary>
-    [Required]
-    [MaxLength(256)]
-    public string? UserEmailAddress { get; set; }
-
-    /// <summary>
     /// Document name.
     /// </summary>
     [Required]

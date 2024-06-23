@@ -99,12 +99,11 @@ public class UpdatePageTests
         {
             DocumentName = "Document",
             NumberPage = 1,
-            UserEmailAddress = "admin@gmail.com",
         };
 
         // Assert
         await _handler
-            .Awaiting(h => h.Handle(new UpdatePage.Command(request, _page), CancellationToken.None))
+            .Awaiting(h => h.Handle(new UpdatePage.Command(request, _page, _existingUser), CancellationToken.None))
             .Should().ThrowAsync<Exception>();
     }
 
@@ -120,12 +119,11 @@ public class UpdatePageTests
         {
             DocumentName = "TestDocument",
             NumberPage = 1,
-            UserEmailAddress = "admin@gmail.com",
         };
 
         // Assert
         await _handler
-            .Awaiting(h => h.Handle(new UpdatePage.Command(request, _page), CancellationToken.None))
+            .Awaiting(h => h.Handle(new UpdatePage.Command(request, _page, _existingUser), CancellationToken.None))
             .Should().NotThrowAsync();
     }
 }

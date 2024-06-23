@@ -81,7 +81,6 @@ public class UpdateDocumentTests
         // Arrange
         var request = new UpdateDocumentRequest
         {
-            UserEmailAddress = "admin@gmail.com",
             DocumentName = "Document",
             DocumentDescription = "Test document",
             NumberPages = 12,
@@ -89,7 +88,7 @@ public class UpdateDocumentTests
 
         // Assert
         await _handler
-            .Awaiting(h => h.Handle(new UpdateDocument.Command(request, _documentFile), CancellationToken.None))
+            .Awaiting(h => h.Handle(new UpdateDocument.Command(request, _documentFile, _existingUser), CancellationToken.None))
             .Should().ThrowAsync<Exception>();
     }
 
@@ -103,7 +102,6 @@ public class UpdateDocumentTests
         // Arrange
         var request = new UpdateDocumentRequest
         {
-            UserEmailAddress = "admin@gmail.com",
             DocumentName = "TestDocument",
             DocumentDescription = "Report for the future business plan",
             NumberPages = 17,
@@ -111,7 +109,7 @@ public class UpdateDocumentTests
 
         // Assert
         await _handler
-            .Awaiting(h => h.Handle(new UpdateDocument.Command(request, _documentFile), CancellationToken.None))
+            .Awaiting(h => h.Handle(new UpdateDocument.Command(request, _documentFile, _existingUser), CancellationToken.None))
             .Should().NotThrowAsync();
     }
 }
