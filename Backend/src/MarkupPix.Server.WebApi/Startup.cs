@@ -72,11 +72,6 @@ public class Startup
             c.OperationFilter<FileUploadOperationFilter>();
         });
 
-        services.AddControllers(options =>
-        {
-            options.Filters.Add<ValidationExceptionFilter>();
-        });
-
         services.AddBusinessServices(Configuration);
         services.AddWebApiServices();
     }

@@ -55,7 +55,8 @@ public class UpdateDocumentTests
         _dbContext = MockHelper.CreateDbContextInMemory();
         _documentFile = MockHelper.MockFormFile();
         _handler = new UpdateDocument.Handler(
-            _dbContext);
+            _dbContext,
+            MockHelper.CreateLogger<UpdateDocument.Handler>());
 
         _dbContext.UsersEntities.Add(_existingUser);
         _dbContext.DocumentsEntities.Add(_existingDocument);

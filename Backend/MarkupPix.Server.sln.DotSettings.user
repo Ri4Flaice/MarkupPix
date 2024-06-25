@@ -17,4 +17,6 @@
     &lt;TestId&gt;NUnit3x::F08555A6-942F-42AB-A34C-21E3FF076930::net8.0::MarkupPix.Business.Tests.Document.GetDocumentTests&lt;/TestId&gt;&#xD;
     &lt;TestId&gt;NUnit3x::F08555A6-942F-42AB-A34C-21E3FF076930::net8.0::MarkupPix.Business.Tests.Document.GetAllDocumentsTests&lt;/TestId&gt;&#xD;
   &lt;/TestAncestor&gt;&#xD;
-&lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>
+&lt;/SessionState&gt;</s:String>
+	<s:Boolean x:Key="/Default/ResxEditorPersonal/CheckedGroups/=src_002FMarkupPix_002ECore_002FErrors_002FErrors/@EntryIndexedValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/ResxEditorPersonal/Initialized/@EntryValue">True</s:Boolean></wpf:ResourceDictionary>

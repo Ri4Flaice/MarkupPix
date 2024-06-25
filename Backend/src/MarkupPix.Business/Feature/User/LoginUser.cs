@@ -1,6 +1,7 @@
 ﻿using System.Text.Json;
 
 using MarkupPix.Business.Infrastructure;
+using MarkupPix.Core.Errors;
 using MarkupPix.Data.Data;
 using MarkupPix.Data.Entities;
 using MarkupPix.Server.ApiClient.Models.User;
@@ -10,6 +11,7 @@ using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Logging;
 
 namespace MarkupPix.Business.Feature.User;
 
@@ -31,6 +33,7 @@ public static class LoginUser
         private readonly UserManager<UserEntity> _userManager;
         private readonly JwtProvider _jwtProvider;
         private readonly IDistributedCache _cache;
+        private readonly ILogger<Handler> _logger;
 
         /// <summary>
         /// Initializes a new instance of the class <see cref="Handler"/>.
@@ -39,16 +42,19 @@ public static class LoginUser
         /// <param name="userManager">User status management interface.</param>
         /// <param name="jwtProvider">JWT provider.</param>
         /// <param name="cache">Distributed cache.</param>
+        /// <param name="logger">The event log.</param>
         public Handler(
             AppDbContext dbContext,
             UserManager<UserEntity> userManager,
             JwtProvider jwtProvider,
-            IDistributedCache cache)
+            IDistributedCache cache,
+            ILogger<Handler> logger)
         {
             _dbContext = dbContext;
             _userManager = userManager;
             _jwtProvider = jwtProvider;
             _cache = cache;
+            _logger = logger;
         }
 
         /// <inheritdoc />
@@ -65,25 +71,30 @@ public static class LoginUser
                         u => u.EmailAddress == request.LoginUserRequest.EmailAddress, cancellationToken);
 
                 if (user == null)
-                    throw new Exception("The email or password is incorrect.");
+                    throw new BusinessException(nameof(Errors.MPX106), Errors.MPX106);
 
                 if (string.IsNullOrEmpty(cachedUser))
                 {
                     await _cache.SetStringAsync(cacheKey, JsonSerializer.Serialize(user), cancellationToken);
                 }
 
-                var isPasswordValid = await _userManager.CheckPasswordAsync(user, request.LoginUserRequest.Password ?? throw new Exception("User's password empty."));
+                var isPasswordValid = await _userManager.CheckPasswordAsync(user, request.LoginUserRequest.Password ?? throw new BusinessException(nameof(Errors.MPX103), Errors.MPX103));
 
                 if (!isPasswordValid)
-                    throw new Exception("The email or password is incorrect.");
+                    throw new BusinessException(nameof(Errors.MPX400), Errors.MPX400);
 
                 var token = await _jwtProvider.GenerateToken(user, _userManager);
 
                 return token;
             }
+            catch (BusinessException)
+            {
+                throw;
+            }
             catch (Exception e)
             {
-                throw new Exception(e.Message);
+                _logger.LogError(e, message: Errors.MPX102, e.Message);
+                throw;
             }
         }
     }

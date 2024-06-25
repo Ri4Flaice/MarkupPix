@@ -1,5 +1,6 @@
 using FluentValidation;
 
+using MarkupPix.Core.Errors;
 using MarkupPix.Data.Data;
 using MarkupPix.Data.Entities;
 using MarkupPix.Server.ApiClient.Models.Document;
@@ -8,6 +9,7 @@ using MediatR;
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace MarkupPix.Business.Feature.Page;
 
@@ -42,14 +44,17 @@ public static class UpdatePage
     public class Handler : IRequestHandler<Command, bool>
     {
         private readonly AppDbContext _dbContext;
+        private readonly ILogger<Handler> _logger;
 
         /// <summary>
         /// Initializes a new instance of the class <see cref="Handler"/>.
         /// </summary>
         /// <param name="dbContext">Database context.</param>
-        public Handler(AppDbContext dbContext)
+        /// <param name="logger">The event log.</param>
+        public Handler(AppDbContext dbContext, ILogger<Handler> logger)
         {
             _dbContext = dbContext;
+            _logger = logger;
         }
 
         /// <inheritdoc />
@@ -67,7 +72,7 @@ public static class UpdatePage
                         cancellationToken);
 
                 if (pageToUpdate == null)
-                    throw new Exception("The document or page was not found.");
+                    throw new BusinessException(nameof(Errors.MPX209), Errors.MPX209);
 
                 pageToUpdate.IsRecognize = true;
                 pageToUpdate.DateRecognize = DateTime.Now;
@@ -86,9 +91,14 @@ public static class UpdatePage
 
                 return true;
             }
+            catch (BusinessException)
+            {
+                throw;
+            }
             catch (Exception e)
             {
-                throw new Exception(e.Message);
+                _logger.LogError(e, message: Errors.MPX210, e.Message);
+                throw;
             }
         }
     }

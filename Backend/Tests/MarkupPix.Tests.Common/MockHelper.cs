@@ -7,7 +7,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
-
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 
 namespace MarkupPix.Tests.Common;
@@ -17,6 +18,17 @@ namespace MarkupPix.Tests.Common;
 /// </summary>
 public static class MockHelper
 {
+    /// <summary>
+    /// Creating the instance <see cref="ILogger{T}"/>.
+    /// </summary>
+    /// <typeparam name="T">Object type.</typeparam>
+    /// <returns>A new instance <see cref="ILogger{T}"/>.</returns>
+    public static ILogger<T> CreateLogger<T>()
+        where T : class
+    {
+        return new NullLogger<T>();
+    }
+
     /// <summary>
     /// Creating database context in memory.
     /// </summary>

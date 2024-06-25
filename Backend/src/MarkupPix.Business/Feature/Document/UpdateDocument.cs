@@ -1,5 +1,6 @@
 using FluentValidation;
 
+using MarkupPix.Core.Errors;
 using MarkupPix.Data.Data;
 using MarkupPix.Data.Entities;
 using MarkupPix.Server.ApiClient.Models.Document;
@@ -8,6 +9,7 @@ using MediatR;
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace MarkupPix.Business.Feature.Document;
 
@@ -42,14 +44,17 @@ public static class UpdateDocument
     public class Handler : IRequestHandler<Command, bool>
     {
         private readonly AppDbContext _dbContext;
+        private readonly ILogger<Handler> _logger;
 
         /// <summary>
         /// Initializes a new instance of the class <see cref="Handler"/>.
         /// </summary>
         /// <param name="dbContext">Database context.</param>
-        public Handler(AppDbContext dbContext)
+        /// <param name="logger">The event log.</param>
+        public Handler(AppDbContext dbContext, ILogger<Handler> logger)
         {
             _dbContext = dbContext;
+            _logger = logger;
         }
 
         /// <inheritdoc />
@@ -62,13 +67,18 @@ public static class UpdateDocument
                     .SingleOrDefaultAsync(d => d.DocumentName == request.UpdateDocumentRequest.DocumentName, cancellationToken);
 
                 if (existingDocument == null)
-                    throw new Exception("A document with that name does not exist.");
+                    throw new BusinessException(nameof(Errors.MPX202), Errors.MPX202);
 
-                if (existingDocument.NumberPages == request.UpdateDocumentRequest.NumberPages && existingDocument.DocumentDescription == request.UpdateDocumentRequest.DocumentDescription) return true;
+                if (existingDocument.NumberPages == request.UpdateDocumentRequest.NumberPages &&
+                    existingDocument.DocumentDescription == request.UpdateDocumentRequest.DocumentDescription)
+                    return true;
 
                 existingDocument.UserId = request.CurrentUser.Id;
 
-                if (request.UpdateDocumentRequest.NumberPages != null && request.UpdateDocumentRequest.NumberPages > existingDocument.NumberPages)
+                if (request.UpdateDocumentRequest.NumberPages < existingDocument.NumberPages)
+                    throw new BusinessException(nameof(Errors.MPX211), Errors.MPX211);
+
+                if (request.UpdateDocumentRequest.NumberPages != null)
                     existingDocument.NumberPages = (int)request.UpdateDocumentRequest.NumberPages;
 
                 if (request.UpdateDocumentRequest.DocumentDescription != null)
@@ -86,9 +96,14 @@ public static class UpdateDocument
 
                 return true;
             }
+            catch (BusinessException)
+            {
+                throw;
+            }
             catch (Exception e)
             {
-                throw new Exception(e.Message);
+                _logger.LogError(e, message: Errors.MPX206, e.Message);
+                throw;
             }
         }
     }

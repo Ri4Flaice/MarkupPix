@@ -2,6 +2,7 @@ using System.Text.Json;
 
 using FluentValidation;
 
+using MarkupPix.Core.Errors;
 using MarkupPix.Data.Data;
 using MarkupPix.Server.ApiClient.Models.User;
 
@@ -9,6 +10,7 @@ using MediatR;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Logging;
 
 namespace MarkupPix.Business.Feature.User;
 
@@ -43,16 +45,19 @@ public static class UpdateUser
     {
         private readonly AppDbContext _dbContext;
         private readonly IDistributedCache _cache;
+        private readonly ILogger<Handler> _logger;
 
         /// <summary>
         /// Initializes a new instance of the class <see cref="Handler"/>.
         /// </summary>
         /// <param name="dbContext">Database context.</param>
         /// <param name="cache">Distributed cache.</param>
-        public Handler(AppDbContext dbContext, IDistributedCache cache)
+        /// <param name="logger">The event log.</param>
+        public Handler(AppDbContext dbContext, IDistributedCache cache, ILogger<Handler> logger)
         {
             _dbContext = dbContext;
             _cache = cache;
+            _logger = logger;
         }
 
         /// <inheritdoc />
@@ -60,20 +65,22 @@ public static class UpdateUser
         {
             try
             {
-                var existingUser = await _dbContext.UsersEntities.SingleOrDefaultAsync(u => u.EmailAddress == request.UpdateUserRequest.EmailAddress, cancellationToken);
+                var existingUser = await _dbContext.UsersEntities.SingleOrDefaultAsync(
+                    u => u.EmailAddress == request.UpdateUserRequest.EmailAddress, cancellationToken);
 
                 if (existingUser == null)
-                    throw new Exception("This user has not been found.");
+                    throw new BusinessException(nameof(Errors.MPX106), Errors.MPX106);
 
-                if (request.UpdateUserRequest.Block == existingUser.Block && request.UpdateUserRequest.AccountType == existingUser.AccountType) return true;
+                if (request.UpdateUserRequest.Block == existingUser.Block &&
+                    request.UpdateUserRequest.AccountType == existingUser.AccountType) return true;
 
                 var cacheKey = $"user:{request.UpdateUserRequest.EmailAddress}";
                 var cacheValue = await _cache.GetStringAsync(cacheKey, cancellationToken);
 
                 if (cacheValue == null)
-                    throw new Exception("User not found in the cache.");
+                    throw new BusinessException(nameof(Errors.MPX106), Errors.MPX106);
 
-                var userToUpdate = JsonSerializer.Deserialize<GetUserResponse>(cacheValue) ?? throw new Exception("Failed to deserialize user data from cache.");
+                var userToUpdate = JsonSerializer.Deserialize<GetUserResponse>(cacheValue) ?? throw new BusinessException(nameof(Errors.MPX300), Errors.MPX300);
 
                 var previousBlock = existingUser.Block;
                 var previousAccountType = existingUser.AccountType;
@@ -84,7 +91,8 @@ public static class UpdateUser
                     userToUpdate.Block = request.UpdateUserRequest.Block.Value;
                 }
 
-                if (request.UpdateUserRequest.AccountType != null && request.UpdateUserRequest.AccountType != previousAccountType)
+                if (request.UpdateUserRequest.AccountType != null &&
+                    request.UpdateUserRequest.AccountType != previousAccountType)
                 {
                     existingUser.AccountType = request.UpdateUserRequest.AccountType.Value;
                     userToUpdate.AccountType = request.UpdateUserRequest.AccountType.Value;
@@ -95,9 +103,14 @@ public static class UpdateUser
 
                 return true;
             }
+            catch (BusinessException)
+            {
+                throw;
+            }
             catch (Exception e)
             {
-                throw new Exception(e.Message);
+                _logger.LogError(e, message: Errors.MPX108, e.Message);
+                throw;
             }
         }
     }

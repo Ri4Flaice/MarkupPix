@@ -64,7 +64,8 @@ public class GetDocumentTests
     {
         _dbContext = MockHelper.CreateDbContextInMemory();
         _handler = new GetDocument.Handler(
-            _dbContext);
+            _dbContext,
+            MockHelper.CreateLogger<GetDocument.Handler>());
 
         _dbContext.UsersEntities.Add(_existingUser);
         _dbContext.DocumentsEntities.Add(_existingDocument);

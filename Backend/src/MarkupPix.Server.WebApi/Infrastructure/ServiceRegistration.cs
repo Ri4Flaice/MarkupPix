@@ -69,6 +69,11 @@ public static class ServiceRegistration
                 .Build();
         });
 
+        services.AddControllers(options =>
+        {
+            options.Filters.Add<ApiExceptionFilter>();
+        });
+
         return services;
     }
 }

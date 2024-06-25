@@ -56,7 +56,8 @@ public class CreateDocumentTests
         _documentFile = MockHelper.MockFormFile();
         _handler = new CreateDocument.Handler(
             _dbContext,
-            MockHelper.CreateMapper());
+            MockHelper.CreateMapper(),
+            MockHelper.CreateLogger<CreateDocument.Handler>());
 
         _dbContext.UsersEntities.Add(_existingUser);
         _dbContext.DocumentsEntities.Add(_existingDocument);

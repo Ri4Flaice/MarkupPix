@@ -41,7 +41,8 @@ public class CreateUserTests
             _dbContext,
             MockHelper.MockUserManager(new List<UserEntity>()),
             MockHelper.CreateMapper(),
-            MockHelper.MockDistributedCache());
+            MockHelper.MockDistributedCache(),
+            MockHelper.CreateLogger<CreateUser.Handler>());
 
         _dbContext.UsersEntities.Add(_existingUser);
         await _dbContext.SaveChangesAsync();

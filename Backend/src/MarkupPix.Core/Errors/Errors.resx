@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+            <xsd:complexType>
+                <xsd:choice maxOccurs="unbounded">
+                    <xsd:element name="data">
+                        <xsd:complexType>
+                            <xsd:sequence>
+                                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+                            </xsd:sequence>
+                            <xsd:attribute name="name" use="required" type="xsd:string" />
+                            <xsd:attribute name="xml:space" use="required" type="xsd:string" />
+                        </xsd:complexType>
+                    </xsd:element>
+                </xsd:choice>
+            </xsd:complexType>
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="MPX400" xml:space="preserve">
+        <value>Input parameter error</value>
+    </data>
+    <data name="MPX500" xml:space="preserve">
+        <value>Undefined error</value>
+    </data>
+    <data name="MPX100" xml:space="preserve">
+        <value>Error when executing the user creation request</value>
+    </data>
+    <data name="MPX101" xml:space="preserve">
+        <value>A user with such an email already exists.</value>
+    </data>
+    <data name="MPX102" xml:space="preserve">
+        <value>Error during user registration.</value>
+    </data>
+    <data name="MPX103" xml:space="preserve">
+        <value>The password is empty.</value>
+    </data>
+    <data name="MPX104" xml:space="preserve">
+        <value>The list of users is empty.</value>
+    </data>
+    <data name="MPX105" xml:space="preserve">
+        <value>An error occurred when executing a request to receive all users.</value>
+    </data>
+    <data name="MPX106" xml:space="preserve">
+        <value>The user was not found.</value>
+    </data>
+    <data name="MPX107" xml:space="preserve">
+        <value>Error when receiving user data.</value>
+    </data>
+    <data name="MPX108" xml:space="preserve">
+        <value>Error updating user data.</value>
+    </data>
+    <data name="MPX200" xml:space="preserve">
+        <value>Error creating the document.</value>
+    </data>
+    <data name="MPX201" xml:space="preserve">
+        <value>A document with such an name already exists.</value>
+    </data>
+    <data name="MPX202" xml:space="preserve">
+        <value>The document was not found.</value>
+    </data>
+    <data name="MPX203" xml:space="preserve">
+        <value>Error in receiving all documents.</value>
+    </data>
+    <data name="MPX204" xml:space="preserve">
+        <value>No pages found for the document.</value>
+    </data>
+    <data name="MPX205" xml:space="preserve">
+        <value>An error occurred while receiving the document.</value>
+    </data>
+    <data name="MPX206" xml:space="preserve">
+        <value>Error updating document data.</value>
+    </data>
+    <data name="MPX207" xml:space="preserve">
+        <value>The number of pages does not match.</value>
+    </data>
+    <data name="MPX208" xml:space="preserve">
+        <value>An error occurred when creating the page.</value>
+    </data>
+    <data name="MPX209" xml:space="preserve">
+        <value>The document or page was not found.</value>
+    </data>
+    <data name="MPX210" xml:space="preserve">
+        <value>An error occurred while updating the page.</value>
+    </data>
+    <data name="MPX211" xml:space="preserve">
+        <value>You cannot reduce the number of pages.</value>
+    </data>
+    <data name="MPX300" xml:space="preserve">
+        <value>User data caching deserialization error.</value>
+    </data>
+</root>

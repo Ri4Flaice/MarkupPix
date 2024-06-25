@@ -8,6 +8,7 @@ using MarkupPix.Server.ApiClient.Models.Document;
 using MarkupPix.Tests.Common;
 
 using Microsoft.AspNetCore.Http;
+using Moq;
 
 namespace MarkupPix.Business.Tests.Page;
 
@@ -69,7 +70,8 @@ public class UpdatePageTests
         _dbContext = MockHelper.CreateDbContextInMemory();
         _page = MockHelper.MockFormFilePage();
         _handler = new UpdatePage.Handler(
-            _dbContext);
+            _dbContext,
+            MockHelper.CreateLogger<UpdatePage.Handler>());
 
         _dbContext.UsersEntities.Add(_existingUser);
         _dbContext.DocumentsEntities.Add(_existingDocument);

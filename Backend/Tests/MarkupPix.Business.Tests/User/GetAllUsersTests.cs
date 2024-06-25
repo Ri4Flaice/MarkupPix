@@ -24,7 +24,8 @@ public class GetAllUsersTests
         _dbContext = MockHelper.CreateDbContextInMemory();
         _handler = new GetAllUsers.Handler(
             _dbContext,
-            MockHelper.CreateMapper());
+            MockHelper.CreateMapper(),
+            MockHelper.CreateLogger<GetAllUsers.Handler>());
 
         _dbContext.UsersEntities.AddRange(ExistingUsers());
         await _dbContext.SaveChangesAsync();

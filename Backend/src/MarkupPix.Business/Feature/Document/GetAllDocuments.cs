@@ -1,9 +1,11 @@
+using MarkupPix.Core.Errors;
 using MarkupPix.Data.Data;
 using MarkupPix.Server.ApiClient.Models.Document;
 
 using MediatR;
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace MarkupPix.Business.Feature.Document;
 
@@ -21,14 +23,17 @@ public static class GetAllDocuments
     public class Handler : IRequestHandler<Command, IEnumerable<GetDocumentResponse>>
     {
         private readonly AppDbContext _dbContext;
+        private readonly ILogger<Handler> _logger;
 
         /// <summary>
         /// Initializes a new instance of the class <see cref="Handler"/>.
         /// </summary>
         /// <param name="dbContext">Database context.</param>
-        public Handler(AppDbContext dbContext)
+        /// <param name="logger">The event log.</param>
+        public Handler(AppDbContext dbContext, ILogger<Handler> logger)
         {
             _dbContext = dbContext;
+            _logger = logger;
         }
 
         /// <inheritdoc />
@@ -58,13 +63,18 @@ public static class GetAllDocuments
                     .ToListAsync(cancellationToken);
 
                 if (documentsResponse == null || documentsResponse.Count == 0)
-                    throw new Exception("No documents found.");
+                    throw new BusinessException(nameof(Errors.MPX202), Errors.MPX202);
 
                 return documentsResponse;
             }
+            catch (BusinessException)
+            {
+                throw;
+            }
             catch (Exception e)
             {
-                throw new Exception(e.Message);
+                _logger.LogError(e, message: Errors.MPX203, e.Message);
+                throw;
             }
         }
     }

@@ -2,6 +2,7 @@ using AutoMapper;
 
 using FluentValidation;
 
+using MarkupPix.Core.Errors;
 using MarkupPix.Data.Data;
 using MarkupPix.Data.Entities;
 using MarkupPix.Server.ApiClient.Models.Document;
@@ -10,6 +11,7 @@ using MediatR;
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace MarkupPix.Business.Feature.Page;
 
@@ -50,16 +52,19 @@ public static class CreatePage
     {
         private readonly AppDbContext _dbContext;
         private readonly IMapper _mapper;
+        private readonly ILogger<Handler> _logger;
 
         /// <summary>
         /// Initializes a new instance of the class <see cref="Handler"/>.
         /// </summary>
         /// <param name="dbContext">Database context.</param>
         /// <param name="mapper">The AutoMapper.</param>
-        public Handler(AppDbContext dbContext, IMapper mapper)
+        /// <param name="logger">The event log.</param>
+        public Handler(AppDbContext dbContext, IMapper mapper, ILogger<Handler> logger)
         {
             _dbContext = dbContext;
             _mapper = mapper;
+            _logger = logger;
         }
 
         /// <inheritdoc />
@@ -73,10 +78,10 @@ public static class CreatePage
                     .SingleOrDefaultAsync(d => d.DocumentName == request.CreatePageRequest.DocumentName, cancellationToken);
 
                 if (existingDocument == null)
-                    throw new Exception("The document was not found.");
+                    throw new BusinessException(nameof(Errors.MPX202), Errors.MPX202);
 
                 if (existingDocument.NumberPages != request.Pages.Count())
-                    throw new Exception("The number of pages does not match.");
+                    throw new BusinessException(nameof(Errors.MPX207), Errors.MPX207);
 
                 using var memoryStream = new MemoryStream();
                 var pagesEntity = new List<PageEntity>();
@@ -99,9 +104,14 @@ public static class CreatePage
 
                 return true;
             }
+            catch (BusinessException)
+            {
+                throw;
+            }
             catch (Exception e)
             {
-                throw new Exception(e.Message);
+                _logger.LogError(e, message: Errors.MPX208, e.Message);
+                throw;
             }
         }
     }

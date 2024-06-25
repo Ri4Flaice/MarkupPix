@@ -1,9 +1,11 @@
+using MarkupPix.Core.Errors;
 using MarkupPix.Data.Data;
 using MarkupPix.Server.ApiClient.Models.Document;
 
 using MediatR;
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace MarkupPix.Business.Feature.Document;
 
@@ -22,14 +24,17 @@ public static class GetDocument
     public class Handler : IRequestHandler<Command, GetDocumentResponse>
     {
         private readonly AppDbContext _dbContext;
+        private readonly ILogger<Handler> _logger;
 
         /// <summary>
         /// Initializes a new instance of the class <see cref="Handler"/>.
         /// </summary>
         /// <param name="dbContext">Database context.</param>
-        public Handler(AppDbContext dbContext)
+        /// <param name="logger">The event log.</param>
+        public Handler(AppDbContext dbContext, ILogger<Handler> logger)
         {
             _dbContext = dbContext;
+            _logger = logger;
         }
 
         /// <inheritdoc />
@@ -37,7 +42,7 @@ public static class GetDocument
         {
             try
             {
-                var response = await _dbContext.DocumentsEntities
+                var documentResponse = await _dbContext.DocumentsEntities
                     .Where(d => d.DocumentName == request.DocumentName)
                     .Include(d => d.Pages)!
                     .ThenInclude(p => p.User)
@@ -59,17 +64,22 @@ public static class GetDocument
                     })
                     .SingleOrDefaultAsync(cancellationToken);
 
-                if (response == null)
-                    throw new Exception("A document with that name does not exist.");
+                if (documentResponse == null)
+                    throw new BusinessException(nameof(Errors.MPX202), Errors.MPX202);
 
-                if (response.Pages == null || response.Pages.Count == 0)
-                    throw new Exception("No pages found for the document");
+                if (documentResponse.Pages == null || documentResponse.Pages.Count == 0)
+                    throw new BusinessException(nameof(Errors.MPX204), Errors.MPX204);
 
-                return response;
+                return documentResponse;
+            }
+            catch (BusinessException)
+            {
+                throw;
             }
             catch (Exception e)
             {
-                throw new Exception(e.Message);
+                _logger.LogError(e, message: Errors.MPX205, e.Message);
+                throw;
             }
         }
     }

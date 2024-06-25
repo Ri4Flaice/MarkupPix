@@ -2,6 +2,7 @@ using AutoMapper;
 
 using FluentValidation;
 
+using MarkupPix.Core.Errors;
 using MarkupPix.Data.Data;
 using MarkupPix.Data.Entities;
 using MarkupPix.Server.ApiClient.Models.Document;
@@ -10,6 +11,7 @@ using MediatR;
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace MarkupPix.Business.Feature.Document;
 
@@ -50,16 +52,19 @@ public static class CreateDocument
     {
         private readonly AppDbContext _dbContext;
         private readonly IMapper _mapper;
+        private readonly ILogger<Handler> _logger;
 
         /// <summary>
         /// Initializes a new instance of the class <see cref="Handler"/>.
         /// </summary>
         /// <param name="dbContext">Database context.</param>
         /// <param name="mapper">The AutoMapper.</param>
-        public Handler(AppDbContext dbContext, IMapper mapper)
+        /// <param name="logger">The event log.</param>
+        public Handler(AppDbContext dbContext, IMapper mapper, ILogger<Handler> logger)
         {
             _dbContext = dbContext;
             _mapper = mapper;
+            _logger = logger;
         }
 
         /// <inheritdoc />
@@ -73,7 +78,7 @@ public static class CreateDocument
                     .SingleOrDefaultAsync(d => d.DocumentName == request.CreateDocumentRequest.DocumentName, cancellationToken);
 
                 if (existingDocument != default)
-                    throw new Exception("A document with such an name already exists.");
+                    throw new BusinessException(nameof(Errors.MPX201), Errors.MPX201);
 
                 var document = _mapper.Map<DocumentEntity>(request.CreateDocumentRequest);
 
@@ -88,9 +93,14 @@ public static class CreateDocument
 
                 return document.Id;
             }
+            catch (BusinessException)
+            {
+                throw;
+            }
             catch (Exception e)
             {
-                throw new Exception(e.Message);
+                _logger.LogError(e, message: Errors.MPX200, e.Message);
+                throw;
             }
         }
     }

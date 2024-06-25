@@ -1,11 +1,14 @@
 using AutoMapper;
 
+using MarkupPix.Core.Errors;
 using MarkupPix.Data.Data;
 using MarkupPix.Data.Entities;
 using MarkupPix.Server.ApiClient.Models.User;
 
 using MediatR;
+
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace MarkupPix.Business.Feature.User;
 
@@ -24,16 +27,19 @@ public static class GetAllUsers
     {
         private readonly AppDbContext _dbContext;
         private readonly IMapper _mapper;
+        private readonly ILogger<Handler> _logger;
 
         /// <summary>
         /// Initializes a new instance of the class <see cref="Handler"/>.
         /// </summary>
         /// <param name="dbContext">Database context.</param>
         /// <param name="mapper">The AutoMapper.</param>
-        public Handler(AppDbContext dbContext, IMapper mapper)
+        /// <param name="logger">The event log.</param>
+        public Handler(AppDbContext dbContext, IMapper mapper, ILogger<Handler> logger)
         {
             _dbContext = dbContext;
             _mapper = mapper;
+            _logger = logger;
         }
 
         /// <inheritdoc />
@@ -44,15 +50,20 @@ public static class GetAllUsers
                 var usersResponse = await _dbContext.UsersEntities.ToListAsync(cancellationToken);
 
                 if (usersResponse == null)
-                    throw new Exception("There are no users in the database.");
+                    throw new BusinessException(nameof(Errors.MPX104), Errors.MPX104);
 
                 var users = _mapper.Map<List<UserEntity>, List<GetUserResponse>>(usersResponse);
 
                 return users;
             }
+            catch (BusinessException)
+            {
+                throw;
+            }
             catch (Exception e)
             {
-                throw new Exception(e.Message);
+                _logger.LogError(e, message: Errors.MPX105, e.Message);
+                throw;
             }
         }
     }

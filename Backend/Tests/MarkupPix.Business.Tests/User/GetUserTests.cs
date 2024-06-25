@@ -38,7 +38,8 @@ public class GetUserTests
         _handler = new GetUser.Handler(
             _dbContext,
             MockHelper.CreateMapper(),
-            MockHelper.MockDistributedCache());
+            MockHelper.MockDistributedCache(),
+            MockHelper.CreateLogger<GetUser.Handler>());
 
         _dbContext.UsersEntities.Add(_existingUser);
         await _dbContext.SaveChangesAsync();

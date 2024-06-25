@@ -37,7 +37,8 @@ public class GetAllDocumentsTests
     {
         _dbContext = MockHelper.CreateDbContextInMemory();
         _handler = new GetAllDocuments.Handler(
-            _dbContext);
+            _dbContext,
+            MockHelper.CreateLogger<GetAllDocuments.Handler>());
 
         _dbContext.UsersEntities.Add(_existingUser);
         _dbContext.DocumentsEntities.AddRange(ExistingDocuments());
